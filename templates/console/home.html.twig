@@ -1,0 +1,59 @@
+{% extends '@UhifadhiDevkit/console/base.html.twig' %}
+{% import '@UhifadhiDevkit/console/_parts.html.twig' as parts %}
+
+{% set devkit_tab = 'home' %}
+
+{% block title %}Devkit{% endblock %}
+{% block shell_page_title %}Devkit{% endblock %}
+{% block shell_page_subtitle %}
+    The dev-only console for the people who build Uhifadhi modules. It answers a
+    builder&rsquo;s two standing questions at a glance: <b>what can I run</b>, and
+    <b>is the fleet wired right</b>. It installs via <code class="mono">require-dev</code>
+    and ships in no built image; in v1 it reads and assembles, and commands run
+    from the CLI.
+{% endblock %}
+
+{% block devkit_content %}
+    <div class="grid g4" style="margin-bottom:8px">
+        <div class="c"><span class="tab">commands</span><div class="kpi"><b>{{ catalogue.total }}</b><div class="sub">from {{ catalogue.contributorCount }} modules &middot; {{ catalogue.demoContentCount }} demo loaders</div></div></div>
+        <div class="c"><span class="tab">modules</span><div class="kpi"><b>{{ registry.installedCount }}</b><div class="sub">installed &middot; {{ registry.onCoreCount }} on current core</div></div></div>
+        <div class="c"><span class="tab">doctor</span><div class="kpi{{ (report.warnCount + report.failCount) > 0 ? ' hot' }}"><b>{{ report.warnCount }}<em>warn</em> {{ report.failCount }}<em>fail</em></b><div class="sub">of {{ report.computedCheckCount }} doctor checks</div></div></div>
+        <div class="c"><span class="tab">wiring</span><div class="kpi"><b>{{ inspector.seamCount }}</b><div class="sub">{{ inspector.providerCount }} providers collected</div></div></div>
+    </div>
+
+    <h2 class="zone">Run something</h2>
+    <p class="pgsub" style="margin:-8px 0 16px">The assembled fleet commands, grouped by contributing module. <a href="{{ path('devkit_console_commands') }}" style="color:var(--acc);text-decoration:none;font-weight:700;white-space:nowrap">All commands &rarr;</a></p>
+
+    {% set hero = catalogue.hero %}
+    <div class="dk-hero"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg></span><div class="bd"><div class="nm">{{ hero.name }} <span class="kind content">{{ hero.kind.value }}</span></div><div class="ds">{{ hero.description }}</div></div>{{ parts.run() }}</div>
+
+    {% for group in catalogue.contributingGroups %}{{ parts.group(group) }}{% endfor %}
+
+    <h2 class="zone">Is the fleet wired right?</h2>
+    <p class="pgsub" style="margin:-8px 0 16px">The module inspector &mdash; registry, core pins and the live compatibility grid. <a href="{{ path('devkit_console_modules') }}" style="color:var(--acc);text-decoration:none;font-weight:700;white-space:nowrap">Full registry &rarr;</a></p>
+
+    <div class="c" style="padding:16px 16px 6px;margin-bottom:16px">
+        {{ parts.registry_table(registry.rows) }}
+    </div>
+
+    <div class="c" style="padding:16px 16px 8px">
+        <span class="tab">compatibility matrix &mdash; module vs the modular-core checklist<a class="more" href="{{ path('devkit_console_doctor') }}" style="margin-left:auto">Matrix &amp; doctor &rarr;</a></span>
+        {{ parts.matrix(report.matrix, report.columns) }}
+    </div>
+
+    <h2 class="zone">At a glance &mdash; doctor &amp; wiring</h2>
+    <div class="grid g2">
+        <div class="c"><span class="tab">doctor<a class="more" href="{{ path('devkit_console_doctor') }}" style="margin-left:auto">Full doctor &rarr;</a></span>
+            {% for f in report.attention %}{{ parts.finding(f) }}{% endfor %}
+            {% for f in report.passing|slice(0, 1) %}{{ parts.finding(f) }}{% endfor %}
+        </div>
+        <div class="c"><span class="tab">wiring &mdash; seams collected<a class="more" href="{{ path('devkit_console_wiring') }}" style="margin-left:auto">Inspect wiring &rarr;</a></span>
+            <table class="tbl">
+                <tr><th>seam</th><th class="num">providers</th></tr>
+                {% for s in inspector.seams|sort((a, b) => b.count <=> a.count)|slice(0, 5) %}
+                    <tr><td class="mono">{{ s.tag }}</td><td class="num">{{ s.count }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

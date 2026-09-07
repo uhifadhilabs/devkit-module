@@ -60,4 +60,11 @@ return static function (ContainerConfigurator $container): void {
      * declared `->decorate()` here would reference a service that does not exist
      * yet. The pass does the decoration by hand at the right moment.
      */
+
+    /*
+     * THE DEV CONSOLE'S UI (slice 2) is wired in config/console.php, imported by
+     * UhifadhiDevkitBundle::loadExtension ONLY where twig-bundle is present — a
+     * real devkit install, which requires it. The collector runs without a UI
+     * (no router, no twig), and its wiring must not drag one in.
+     */
 };

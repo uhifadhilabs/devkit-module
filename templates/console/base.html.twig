@@ -1,0 +1,49 @@
+{# THE DEVKIT CONSOLE'S SHARED FRAME.
+
+   Every surface extends this, and this extends the shell's page frame — so the
+   console is the same product a builder already reads, just a dev surface. It
+   types no furniture the shell owns (no .page, no crumb markup, no flash loop);
+   it fills the shell's sockets, and adds only the console's own chrome: the four
+   tabs, the dev-only chips, and the one bespoke stylesheet.
+
+   A child sets `devkit_tab` (home · commands · modules · doctor · wiring) and
+   fills the title, subtitle and `devkit_content` blocks. #}
+{% extends '@UhifadhiShell/page.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {# devkit's own vocabulary — the assembled command list, the conformance
+       matrix, the seam inspector — riding the shell's shared tokens so it flips
+       with the theme. Shipped in the bundle's public/, exposed by AssetMapper. #}
+    <link rel="stylesheet" href="{{ asset('bundles/uhifadhidevkit/devkit.css') }}">
+{% endblock %}
+
+{% block shell_breadcrumbs %}
+    <a href="{{ path('devkit_console') }}">uhifadhi</a> /
+    {%- if devkit_tab == 'home' %} devkit
+    {%- else %} <a href="{{ path('devkit_console') }}">devkit</a> / {{ devkit_tab }}
+    {%- endif %}
+{% endblock %}
+
+{% block shell_page_actions %}
+    <span class="chip warn">dev-only</span> <span class="chip acc">OSS &middot; require-dev</span>
+{% endblock %}
+
+{% block shell_page_tabs %}
+    <div class="atabs">
+        <a class="{{ devkit_tab == 'commands' ? 'on' }}" href="{{ path('devkit_console_commands') }}">Commands</a>
+        <a class="{{ devkit_tab == 'modules' ? 'on' }}" href="{{ path('devkit_console_modules') }}">Modules</a>
+        <a class="{{ devkit_tab == 'doctor' ? 'on' }}" href="{{ path('devkit_console_doctor') }}">Doctor</a>
+        <a class="{{ devkit_tab == 'wiring' ? 'on' }}" href="{{ path('devkit_console_wiring') }}">Wiring</a>
+    </div>
+{% endblock %}
+
+{% block shell_page %}
+    {% block devkit_content %}{% endblock %}
+{% endblock %}
+
+{% block shell_footer %}
+    Uhifadhi &mdash; operations platform for protected areas. <b>Devkit</b> is a
+    dev-only, open-source module for the people who build the others; it installs
+    via <code class="mono">require-dev</code> and ships in no built image.
+{% endblock %}

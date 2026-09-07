@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Uhifadhi\Devkit\Console\DependencyInjection\Compiler\CollectSeamsPass;
 use Uhifadhi\Devkit\DependencyInjection\Compiler\DecorateCommandLoaderPass;
 use Uhifadhi\ModuleContracts\Devkit\CommandProviderInterface;
 use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
@@ -67,10 +68,24 @@ final class UhifadhiDevkitBundle extends AbstractBundle
      */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        // The collector has no host-facing configuration in this slice; the
-        // static wiring is all there is. (The dev-console UI, a later slice,
-        // is where configuration first appears.)
+        // The collector's static wiring — always.
         $container->import('../config/services.php');
+
+        // The dev-console UI — ONLY where twig-bundle is installed, i.e. a real
+        // devkit install (devkit requires twig, routing and the shell). The
+        // collector can be booted on framework-bundle alone, and its container
+        // must not gain a dependency on a router or twig it does not have; the
+        // console's own wiring lives behind this gate for exactly that reason.
+        //
+        // Gated on kernel.bundles rather than hasExtension('twig'): at
+        // loadExtension time not every bundle's extension is registered yet, but
+        // the registered-bundles map is a kernel parameter set before any of them
+        // loads.
+        /** @var array<string, class-string> $bundles */
+        $bundles = $builder->hasParameter('kernel.bundles') ? $builder->getParameter('kernel.bundles') : [];
+        if (isset($bundles['TwigBundle'])) {
+            $container->import('../config/console.php');
+        }
     }
 
     public function build(ContainerBuilder $container): void
@@ -99,5 +114,14 @@ final class UhifadhiDevkitBundle extends AbstractBundle
          * is a hand-written pass (see DecorateCommandLoaderPass).
          */
         $container->addCompilerPass(new DecorateCommandLoaderPass(), PassConfig::TYPE_BEFORE_REMOVING, -16);
+
+        /*
+         * Collect, for every known contribution seam, the classes registered on
+         * its tag — the data the Wiring surface's inspector reads. It runs at
+         * TYPE_BEFORE_REMOVING so every tag (including the ones this bundle adds
+         * by registerForAutoconfiguration above) has settled and none has been
+         * optimised away. See CollectSeamsPass.
+         */
+        $container->addCompilerPass(new CollectSeamsPass(), PassConfig::TYPE_BEFORE_REMOVING);
     }
 }

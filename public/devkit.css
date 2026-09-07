@@ -1,0 +1,146 @@
+/* ============================================================================
+   DEVKIT — the dev-only module's console.
+   ----------------------------------------------------------------------------
+   Built on the host design system (uhifadhi.css tokens + nav.css shell +
+   widgets.css page-head row). Devkit reuses the app's own chrome wherever it
+   exists — .crumb, .pghead, .atabs, .zone, .kpi, .c, .chip, .factband, .tbl,
+   .open-btn — so a builder reads it as the same product, just a dev surface.
+   This file adds ONLY the vocabulary the four surfaces genuinely need that the
+   shared system has no equivalent for: the assembled command list, the module
+   registry typography, the conformance matrix, the doctor checks and the seam
+   inspector. Everything rides the shared tokens (--acc, --ok, --warn, --fail,
+   --fog, --tx, --ln, --ln2, --p1, --p2, --raised) so it flips with the theme.
+   Nothing here is product chrome: devkit installs via require-dev and never
+   exists in a built image.
+   ========================================================================== */
+
+/* ── THE DEV-ONLY MARKER (sidebar) ────────────────────────────────────────
+   The one bespoke marker kept: the little DEV tag on the sidebar's Devkit item,
+   so the nav always shows this is a builder's surface. In the page body the
+   dev-only / require-dev fact rides the shared .chip in the header instead. */
+.nav-item .navdev{margin-left:auto;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:7.5px;
+  font-weight:700;letter-spacing:.12em;color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);
+  border-radius:5px;padding:2px 5px}
+.side.rail .nav-item .navdev{display:none}
+
+/* ── COMMANDS — the assembled dev commands, grouped by contributing module ──
+   The unique reason devkit exists: modules ship inert providers, devkit
+   assembles them into one runnable list. */
+.dk-grp{display:flex;align-items:center;gap:11px;margin:26px 0 10px}
+.dk-grp:first-of-type{margin-top:4px}
+.dk-grp .dot{width:9px;height:9px;border-radius:3px;flex:none}
+.dk-grp .gn{font-family:"Archivo",system-ui,sans-serif;font-weight:700;font-size:15px;color:var(--tx)}
+.dk-grp .pkg{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;color:var(--dim)}
+.dk-grp .cnt{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;color:var(--fog);
+  border:1px solid var(--ln2);border-radius:99px;padding:3px 9px}
+.dk-grp .ln{flex:1;height:1px;background:var(--ln)}
+
+.dk-cmd{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--ln);
+  border-radius:11px;background:linear-gradient(180deg,var(--p1),var(--p2));margin-bottom:8px}
+.dk-cmd .bd{flex:1;min-width:0}
+.dk-cmd .nm{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;color:var(--tx);
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.dk-cmd .nm .kind{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fog);
+  border:1px solid var(--ln2);border-radius:5px;padding:2px 6px}
+.dk-cmd .nm .kind.content{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 40%,transparent)}
+.dk-cmd .ds{font-size:12.5px;color:var(--fog);margin-top:5px;line-height:1.5}
+.dk-cmd.dep{opacity:.72}
+.dk-cmd.dep .nm{text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--warn) 70%,transparent)}
+.dk-run{display:inline-flex;align-items:center;gap:6px;font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--fog);border:1px solid var(--ln2);
+  border-radius:8px;padding:6px 11px;flex:none;background:none;cursor:not-allowed}
+.dk-run svg{width:12px;height:12px}
+.dk-run .cli{color:var(--dim)}
+
+/* the loud primary command — fixtures:demo, the one line that stands a park up */
+.dk-hero{display:flex;align-items:center;gap:16px;border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);
+  border-radius:13px;background:color-mix(in srgb,var(--acc) 7%,transparent);padding:15px 17px;margin-bottom:14px}
+.dk-hero .ic{width:40px;height:40px;border-radius:11px;flex:none;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--acc) 16%,transparent);color:var(--acc)}
+.dk-hero .ic svg{width:20px;height:20px}
+.dk-hero .bd{flex:1;min-width:0}
+.dk-hero .nm{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:15px;font-weight:700;color:var(--tx);
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.dk-hero .ds{font-size:12.5px;color:var(--fog);margin-top:5px;line-height:1.5}
+.dk-hero .dk-run{border-color:color-mix(in srgb,var(--acc) 40%,transparent);color:var(--acc)}
+
+/* ── MODULES REGISTRY — the installed fleet as a table. Uses table.tbl but adds
+   version + constraint typography. ────────────────────────────────────────── */
+.dk-ver{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:700;color:var(--tx)}
+.dk-con{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;color:var(--fog)}
+.dk-con.w{color:var(--warn)}
+.dk-pkg{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;color:var(--dim)}
+.dk-name{font-family:"Archivo",system-ui,sans-serif;font-weight:700;font-size:14px;color:var(--tx)}
+.dk-on{display:inline-flex;align-items:center;gap:6px;font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:11px;color:var(--fog)}
+.dk-on i{width:7px;height:7px;border-radius:2px;background:var(--ok);flex:none}
+.dk-on.zero i{background:var(--dim)}
+
+/* ── DOCTOR — the compatibility matrix + doctor checks ─────────────────────
+   A conformance grid: rows are modules, columns are checks; a cell is a state.
+   The heat is one meaning (pass/warn/fail), never decorative. */
+.dk-mx{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+.dk-mx th{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:8.5px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--fog);padding:9px 8px;text-align:center;border-bottom:1px solid var(--ln2);
+  white-space:nowrap;vertical-align:bottom}
+.dk-mx th.rowhd{text-align:left;min-width:200px}
+.dk-mx td{padding:0;border-bottom:1px solid var(--ln);text-align:center}
+.dk-mx tr:last-child td{border-bottom:0}
+.dk-mx td.rowhd{padding:11px 8px;text-align:left;white-space:nowrap}
+.dk-mx tr:hover td{background:color-mix(in srgb,var(--acc) 4%,transparent)}
+.dk-cell{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:7px;margin:6px auto}
+.dk-cell svg{width:14px;height:14px}
+.dk-cell.pass{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.dk-cell.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.dk-cell.fail{color:var(--fail);background:color-mix(in srgb,var(--fail) 14%,transparent)}
+.dk-cell.na{color:var(--dim);border:1px dashed var(--ln2)}
+
+/* doctor check list (single-column form) */
+.dk-check{display:flex;align-items:flex-start;gap:13px;padding:12px 4px;
+  border-bottom:1px dashed color-mix(in srgb,var(--fog) 18%,transparent)}
+.dk-check:last-child{border-bottom:0}
+.dk-check .ic{width:24px;height:24px;border-radius:7px;flex:none;display:grid;place-items:center}
+.dk-check .ic svg{width:14px;height:14px}
+.dk-check.pass .ic{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.dk-check.warn .ic{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.dk-check.fail .ic{color:var(--fail);background:color-mix(in srgb,var(--fail) 14%,transparent)}
+.dk-check .bd{flex:1}
+.dk-check .t{font-weight:600;font-size:13px;color:var(--tx)}
+.dk-check .m{font-size:12px;color:var(--fog);margin-top:3px;line-height:1.5}
+.dk-check .m code,.dk-seam code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;
+  background:color-mix(in srgb,var(--fog) 12%,transparent);border-radius:5px;padding:1px 6px;color:var(--tx)}
+.dk-check .who{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;color:var(--dim);
+  margin-top:5px;white-space:nowrap}
+
+/* ── WIRING — the seam/tag inspector. Each seam is a bordered plate with its
+   collected providers listed underneath. ──────────────────────────────────── */
+.dk-seam{border:1px solid var(--ln);border-radius:13px;background:linear-gradient(180deg,var(--p1),var(--p2));
+  padding:16px 16px 8px;margin-bottom:16px}
+.dk-seam .sh{display:flex;align-items:center;gap:11px;margin-bottom:4px}
+.dk-seam .tag{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;color:var(--acc)}
+.dk-seam .sn{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;color:var(--fog);
+  border:1px solid var(--ln2);border-radius:99px;padding:3px 10px;margin-left:auto}
+.dk-seam .sd{font-size:12.5px;color:var(--fog);line-height:1.55;margin:0 0 10px}
+.dk-seam .sd b{color:var(--tx)}
+.dk-prov{display:flex;align-items:center;gap:11px;padding:9px 2px;
+  border-top:1px dashed color-mix(in srgb,var(--fog) 16%,transparent);font-size:12.5px}
+.dk-prov .dot{width:8px;height:8px;border-radius:2px;flex:none}
+.dk-prov .cn{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;color:var(--tx);flex:1;min-width:0}
+.dk-prov .frm{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;color:var(--dim)}
+
+/* module provenance dots — one hue per contributor, reused across surfaces */
+.d-host{background:var(--fog)}
+.d-patrol{background:var(--acc)}
+.d-incident{background:var(--fail)}
+.d-roster{background:var(--warn)}
+.d-map{background:#4A90C2}
+.d-storage{background:#9B7BD4}
+
+/* ── a quiet note card, mirrors the preset galleries' w-galnote ───────────── */
+.dk-note{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--ln2);border-radius:12px;
+  background:color-mix(in srgb,var(--acc) 5%,transparent);padding:14px 16px;margin:0 0 22px}
+.dk-note svg{width:17px;height:17px;color:var(--acc);flex:none;margin-top:1px}
+.dk-note .bd{flex:1;font-size:12.5px;line-height:1.6;color:var(--tx)}
+.dk-note .bd b{color:var(--tx)}
+.dk-note code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;
+  background:color-mix(in srgb,var(--fog) 12%,transparent);border-radius:5px;padding:1px 6px;color:var(--tx)}

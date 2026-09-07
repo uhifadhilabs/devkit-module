@@ -1,0 +1,34 @@
+{% extends '@UhifadhiDevkit/console/base.html.twig' %}
+{% import '@UhifadhiDevkit/console/_parts.html.twig' as parts %}
+
+{% set devkit_tab = 'modules' %}
+
+{% block title %}Modules{% endblock %}
+{% block shell_page_title %}Modules{% endblock %}
+{% block shell_page_subtitle %}
+    The installed fleet, in one register &mdash; every module with its version,
+    whether it pins the current core, how many permissions and routes it declares,
+    and where it is switched on. This is the authoritative registry the
+    compatibility matrix and doctor read from; the Doctor surface turns these same
+    facts into pass / warn / fail.
+{% endblock %}
+
+{% block devkit_content %}
+    <div class="factband">
+        <div class="f"><span class="k">Installed</span><span class="v">{{ registry.installedCount }} <em>packages</em></span></div>
+        <div class="f"><span class="k">Current core</span><span class="v">module-contracts {{ registry.currentCore }}</span></div>
+        <div class="f"><span class="k">On current core</span><span class="v">{{ registry.onCoreCount }} / {{ registry.pinsCoreCount }}</span></div>
+        <div class="f"><span class="k">Permissions</span><span class="v">{{ registry.totalPermissions }}</span></div>
+        <div class="f"><span class="k">Routes</span><span class="v">{{ registry.totalRoutes }}</span></div>
+        <div class="sp"></div>
+        <div class="f"><span class="k">Conformance</span><span class="v"><a href="{{ path('devkit_console_doctor') }}" style="text-decoration:none"><span class="chip warn">{{ report.warnCount }} warn</span> <span class="chip fail">{{ report.failCount }} fail</span></a></span></div>
+    </div>
+
+    <h2 class="zone">The registry</h2>
+    <div class="c" style="padding:16px 16px 6px">
+        {{ parts.registry_table(registry.rows) }}
+    </div>
+
+    <h2 class="zone">Per-area module state</h2>
+    <div class="dk-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div class="bd"><b>The per-area on/off matrix is deferred &mdash; flagged, not faked.</b> Host-wide modules are on everywhere by definition; a capability module is switched on per area. The exact grid (&ldquo;on in 1 / 4&rdquo;) needs the seam&rsquo;s per-area ledger &mdash; a database read &mdash; <b>and</b> the host&rsquo;s list of areas to divide by, neither of which the standalone console has. The registry above classifies each module&rsquo;s reach DB-free; the count is a host-bound later slice.</div></div>
+{% endblock %}

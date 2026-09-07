@@ -15,6 +15,7 @@ is the only place devkit exists.
 - [`fixtures:demo` — demo content in dependency order](#fixturesdemo--demo-content-in-dependency-order)
 - [Descriptor commands](#descriptor-commands)
 - [How a module contributes](#how-a-module-contributes)
+- [The dev console](#the-dev-console)
 - [Why the contracts live in `module-contracts`, not here](#why-the-contracts-live-in-module-contracts-not-here)
 
 ## What it collects
@@ -75,6 +76,45 @@ $services->set('patrol.devkit.commands', PatrolCommandProvider::class)
 
 In production the tag has no consumer (devkit is not installed), so the provider
 is inert data. In a dev install devkit is present and collects it.
+
+## The dev console
+
+Devkit also ships a **dev-only inspector console** — the home a module builder
+leaves open on a second monitor. It renders in the `uhifadhi/shell-module` frame
+and has four surfaces, reached under `/_devkit`:
+
+- **Commands** — the assembled dev commands and demo-content loaders, grouped by
+  the module that contributed them (the same collection `fixtures:demo` and the
+  descriptor commands are built from, seen from the side).
+- **Modules** — the installed fleet as one register: each package's version, the
+  core it pins (`Composer\Semver` against the installed `module-contracts`), its
+  declared permissions and stamped routes, and its DB-free reach classification.
+- **Doctor** — the compatibility matrix and the findings that turn it into
+  pass / warn / fail. Devkit computes the checks it can read (pins the core, no
+  `dev-main` marker, routes stamped) and **flags the rest as deferred** rather
+  than faking them green.
+- **Wiring** — the tag inspector: for every contribution seam the platform
+  defines, who is registered and how many collected.
+
+The console **reads**; it runs nothing (v1). The Run affordances are drawn
+deliberately inert — commands run from the CLI.
+
+Two firewalls keep it out of production. The first is `require-dev` (devkit is
+not in a production build at all); the second is a `%kernel.debug%` guard in the
+controller. A dev application makes the surfaces reachable by importing the
+route resource in a `when@dev` block it owns:
+
+```yaml
+# config/routes/devkit.yaml (your application)
+when@dev:
+    devkit:
+        resource: '@UhifadhiDevkitBundle/config/routes/console.php'
+```
+
+The introspection is DB-free: everything reads Composer, the router and the
+tagged services. The one thing it cannot read standalone — the exact **per-area**
+on/off count — needs the seam's per-area ledger (a database) and the host's list
+of areas, and is flagged deferred on the Modules surface rather than faked.
 
 ## Why the contracts live in `module-contracts`, not here
 

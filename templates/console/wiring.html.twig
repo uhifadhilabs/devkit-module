@@ -1,0 +1,45 @@
+{% extends '@UhifadhiDevkit/console/base.html.twig' %}
+{% import '@UhifadhiDevkit/console/_parts.html.twig' as parts %}
+
+{% set devkit_tab = 'wiring' %}
+
+{% block title %}Wiring{% endblock %}
+{% block shell_page_title %}Wiring{% endblock %}
+{% block shell_page_subtitle %}
+    The tag inspector &mdash; for each contribution seam the platform defines, who
+    is registered and how many collected. The commands tell you what you can run;
+    the seams tell you what the modules have actually wired into the platform.
+    Every seam is a tagged service the host enumerates.
+{% endblock %}
+
+{% macro seam(s) %}
+    {% import '@UhifadhiDevkit/console/_parts.html.twig' as parts %}
+    <div class="dk-seam"><div class="sh"><span class="tag">{{ s.tag }}</span><span class="sn">{{ s.count }} collected</span></div><p class="sd">{{ s.description }}</p>
+        {% for c in s.contributors %}
+            <div class="dk-prov">{{ parts.dot(c.package ? c.package.shortName : 'app') }}<span class="cn">{{ c.shortClass }}</span><span class="frm">{{ c.package ? c.package.shortName : 'app' }}</span></div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% block devkit_content %}
+    {% import _self as page %}
+    {% set seams = inspector.seams %}
+    {% set widest = inspector.widest %}
+
+    <div class="grid g4" style="margin-bottom:26px">
+        <div class="c"><span class="tab">seams</span><div class="kpi"><b>{{ inspector.seamCount }}</b><div class="sub">contribution seams defined</div></div></div>
+        <div class="c"><span class="tab">providers</span><div class="kpi"><b>{{ inspector.providerCount }}</b><div class="sub">collected across the seams</div></div></div>
+        <div class="c"><span class="tab">contributors</span><div class="kpi"><b>{{ inspector.contributorCount }}</b><div class="sub">modules register on a seam</div></div></div>
+        <div class="c"><span class="tab">widest</span><div class="kpi"><b>{{ widest.count }}</b><div class="sub">on {{ widest.tag ?: '—' }}</div></div></div>
+    </div>
+
+    <h2 class="zone">The contribution seams</h2>
+
+    {% if seams|length %}{{ page.seam(seams|first) }}{% endif %}
+
+    <div class="grid g2">
+        {% for s in seams|slice(1) %}{{ page.seam(s) }}{% endfor %}
+    </div>
+
+    <div class="dk-note" style="margin-top:24px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div class="bd"><b>Seams are how modules stay decoupled.</b> A module registers a tagged service and the host collects it &mdash; no module edits another. The same mechanism carries the dev commands and demo-content devkit assembles on the Commands surface.</div></div>
+{% endblock %}

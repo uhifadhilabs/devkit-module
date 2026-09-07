@@ -1,0 +1,48 @@
+{% extends '@UhifadhiDevkit/console/base.html.twig' %}
+{% import '@UhifadhiDevkit/console/_parts.html.twig' as parts %}
+
+{% set devkit_tab = 'doctor' %}
+
+{% block title %}Doctor{% endblock %}
+{% block shell_page_title %}Doctor{% endblock %}
+{% block shell_page_subtitle %}
+    The live conformance read &mdash; the compatibility matrix (every module
+    against the modular-core checklist) and the doctor findings that turn it into
+    pass, warn and fail. Everything here reads the registry; fixing a finding
+    means editing a module&rsquo;s <code class="mono">composer.json</code> and
+    re-tagging.
+{% endblock %}
+
+{% block devkit_content %}
+    <div class="grid g4" style="margin-bottom:26px">
+        <div class="c"><span class="tab">checks</span><div class="kpi"><b>{{ report.computedCheckCount }}</b><div class="sub">computed &middot; {{ report.deferredCheckCount }} deferred</div></div></div>
+        <div class="c"><span class="tab">passing</span><div class="kpi"><b>{{ report.passingCheckCount }}</b><div class="sub">computed checks clean fleet-wide</div></div></div>
+        <div class="c"><span class="tab">warn</span><div class="kpi{{ report.warnCount > 0 ? ' hot' }}"><b>{{ report.warnCount }}</b><div class="sub">behind the current core</div></div></div>
+        <div class="c"><span class="tab">fail</span><div class="kpi{{ report.failCount > 0 ? ' hot' }}"><b>{{ report.failCount }}</b><div class="sub">dev-main markers</div></div></div>
+    </div>
+
+    <h2 class="zone">Compatibility matrix &mdash; module vs the modular-core checklist</h2>
+    <p class="pgsub">Rows are modules, columns are the checks. One meaning per colour: <span style="color:var(--ok)">pass</span>, <span style="color:var(--warn)">warn</span>, <span style="color:var(--fail)">fail</span>, <span style="color:var(--dim)">n/a</span> where a check does not apply, and <span style="color:var(--dim)">?</span> where devkit has <b>deferred</b> the check.</p>
+    <div class="c" style="padding:16px 16px 8px;margin-bottom:22px">
+        {{ parts.matrix(report.matrix, report.columns) }}
+    </div>
+
+    <h2 class="zone">Doctor</h2>
+    <div class="grid g2">
+        <div class="c"><span class="tab">doctor &mdash; needs attention</span>
+            {% for f in report.attention %}{{ parts.finding(f) }}{% else %}
+                <div class="dk-check pass"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div class="bd"><div class="t">Nothing needs attention</div><div class="m">Every computed check is clean across the fleet.</div></div></div>
+            {% endfor %}
+        </div>
+        <div class="c"><span class="tab">doctor &mdash; passing</span>
+            {% for f in report.passing %}{{ parts.finding(f) }}{% endfor %}
+        </div>
+    </div>
+
+    <h2 class="zone">Deferred checks</h2>
+    <div class="c"><span class="tab">not yet read by devkit &mdash; flagged, not faked</span>
+        {% for check in report.deferred %}
+            <div class="dk-check"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span><div class="bd"><div class="t">{{ check.header }} {{ check.subheader }}</div><div class="m">{{ check.caption }}</div></div></div>
+        {% endfor %}
+    </div>
+{% endblock %}
