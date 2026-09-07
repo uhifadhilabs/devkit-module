@@ -1,0 +1,66 @@
+{
+    "name": "uhifadhi/devkit-module",
+    "description": "Devkit: the dev-only collector. Installed via require-dev, it gathers the inert Devkit\\ContentProviderInterface and Devkit\\CommandProviderInterface classes other modules ship and materialises them into a `fixtures:demo` seeder (run in dependsOn topological order) and real console commands — present only in a dev install.",
+    "type": "symfony-bundle",
+    "keywords": [
+        "devkit",
+        "fixtures",
+        "seeding",
+        "demo",
+        "dev-tools",
+        "symfony",
+        "uhifadhi"
+    ],
+    "license": "AGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Ezekiel Mjema",
+            "homepage": "https://github.com/eemjema"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "symfony/config": "^7.3 || ^8.0",
+        "symfony/console": "^7.3 || ^8.0",
+        "symfony/dependency-injection": "^7.3 || ^8.0",
+        "symfony/framework-bundle": "^7.3 || ^8.0",
+        "symfony/http-kernel": "^7.3 || ^8.0",
+        "uhifadhi/module-contracts": "^0.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Uhifadhi\\Devkit\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Uhifadhi\\Devkit\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^13.2"
+    },
+    "scripts": {
+        "cs:fix": "php-cs-fixer fix",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "phpstan": "phpstan analyse --no-progress --memory-limit=1G",
+        "test": "phpunit",
+        "check": [
+            "@cs:check",
+            "@phpstan",
+            "@test"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1-dev"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

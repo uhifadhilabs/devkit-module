@@ -1,0 +1,13 @@
+/vendor/
+/.phpunit.cache/
+/.php-cs-fixer.cache
+/composer.lock
+
+# Auto-generated Symfony config-reference dump — written on kernel build,
+# "for apps only"; regenerated, never committed.
+/config/reference.php
+
+# IDE / editor files — never commit
+/.idea/
+/.vscode/
+*.iml
