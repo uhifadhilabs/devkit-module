@@ -20,7 +20,7 @@ use Uhifadhi\Devkit\Console\Doctor\Conformance;
 use Uhifadhi\Devkit\Console\Module\ModuleRegistry;
 use Uhifadhi\Devkit\Console\Package\ComposerPackageIntrospector;
 use Uhifadhi\Devkit\Console\Package\PackageIntrospector;
-use Uhifadhi\Devkit\Console\Wiring\SeamInspector;
+use Uhifadhi\Devkit\Console\Wiring\ContributionPointInspector;
 use Uhifadhi\Devkit\UhifadhiDevkitBundle;
 
 /*
@@ -31,7 +31,7 @@ use Uhifadhi\Devkit\UhifadhiDevkitBundle;
  * The collector (slice 1) runs without any of that, so this file is not loaded
  * there and its router/twig dependencies never reach a UI-less container.
  *
- * The surfaces read the same seams the collector runs on — the tagged
+ * The surfaces read the same tags the collector runs on — the tagged
  * content/command providers, the module providers, the router — and turn them
  * into the four inspector surfaces. Everything is dev-only by the same firewall
  * the collector is: devkit is require-dev.
@@ -71,8 +71,8 @@ return static function (ContainerConfigurator $container): void {
         ]);
 
     // Wiring surface — the tag inspector. Its first argument (the collected
-    // tag => classes map) is filled by CollectSeamsPass at compile time.
-    $services->set('devkit.console.seam_inspector', SeamInspector::class)
+    // tag => classes map) is filled by CollectContributionPointsPass at compile time.
+    $services->set('devkit.console.contribution_points', ContributionPointInspector::class)
         ->args([
             [],
             service('devkit.console.packages'),
@@ -86,7 +86,7 @@ return static function (ContainerConfigurator $container): void {
             service('devkit.console.command_inventory'),
             service('devkit.console.module_registry'),
             service('devkit.console.conformance'),
-            service('devkit.console.seam_inspector'),
+            service('devkit.console.contribution_points'),
             param('kernel.debug'),
         ])
         ->public();

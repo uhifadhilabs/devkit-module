@@ -21,15 +21,15 @@ final class ResolvedPackageTest extends TestCase
     public function testItCallsAModuleByItsSlug(): void
     {
         self::assertSame('patrol', ResolvedPackage::of('uhifadhi/patrol-module', '0.5.2')->shortName);
-        self::assertSame('shell', ResolvedPackage::of('uhifadhi/shell-module', '0.8.0')->shortName);
+        self::assertSame('storage', ResolvedPackage::of('uhifadhi/storage-module', '0.8.0')->shortName);
     }
 
-    public function testTheSeamKeepsItsOwnName(): void
+    public function testTheCoreKeepsItsOwnName(): void
     {
         self::assertSame(
-            'module-contracts',
-            ResolvedPackage::of('uhifadhi/module-contracts', 'v0.5.1')->shortName,
-            'The contract is not a module and is not called one.',
+            'uhifadhi',
+            ResolvedPackage::of('uhifadhi/uhifadhi', 'v1.0.0')->shortName,
+            'The core is not a module and is not called one.',
         );
     }
 }

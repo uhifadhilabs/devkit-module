@@ -25,22 +25,22 @@ use Uhifadhi\Devkit\Console\Package\ResolvedPackage;
  * whether it pins the current core, how much it declares, and where it reaches.
  *
  * The rows are the Composer fleet (so an infrastructure package that carries no
- * module provider is still listed), enriched from the module seam where a
+ * module provider is still listed), enriched from the module tag where a
  * provider is registered: its declared permissions, and its stamped routes
  * counted off the router. The core question is answered by comparing each
- * package's own `uhifadhi/module-contracts` constraint against the contracts
+ * package's own `uhifadhi/uhifadhi` constraint against the core
  * version actually installed — {@see Semver}, not a string
  * match, so `^0.4` reads as behind `0.5.1` and `^0.5` reads as on it.
  *
  * WHAT IS DEFERRED, AND WHY. The exact per-area on/off count ("on in 1 / 4")
- * needs the seam's per-area ledger — a database read — and the host's list of
+ * needs the registry's per-area ledger — a database read — and the host's list of
  * areas to divide by. The standalone console has neither, so a module's reach is
  * classified DB-free ({@see ModuleReach}) and the count is left to a host-bound
  * later slice rather than faked here.
  */
 final class ModuleRegistry
 {
-    private const string CONTRACTS_PACKAGE = 'uhifadhi/module-contracts';
+    private const string CORE_PACKAGE = 'uhifadhi/uhifadhi';
 
     /**
      * @param iterable<ModuleProviderInterface> $providers every module tagged with uhifadhi.module
@@ -54,7 +54,7 @@ final class ModuleRegistry
 
     public function view(): ModuleRegistryView
     {
-        $contracts = $this->packages->package(self::CONTRACTS_PACKAGE);
+        $contracts = $this->packages->package(self::CORE_PACKAGE);
         $currentCore = null !== $contracts ? $contracts->version : 'unknown';
         $providersByPackage = $this->providersByPackage();
 
@@ -69,34 +69,34 @@ final class ModuleRegistry
 
     private function row(ResolvedPackage $package, ?ModuleProviderInterface $provider, string $currentCore): ModuleRow
     {
-        $isContract = self::CONTRACTS_PACKAGE === $package->name;
-        $constraint = $isContract
+        $isCore = self::CORE_PACKAGE === $package->name;
+        $constraint = $isCore
             ? null
-            : ($this->packages->requirements($package->name)[self::CONTRACTS_PACKAGE] ?? null);
+            : ($this->packages->requirements($package->name)[self::CORE_PACKAGE] ?? null);
 
         return new ModuleRow(
             package: $package,
-            contractsConstraint: $constraint,
-            coreState: $this->coreState($isContract, $constraint, $currentCore),
+            coreConstraint: $constraint,
+            coreState: $this->coreState($isCore, $constraint, $currentCore),
             permissions: null === $provider ? 0 : \count($provider->permissions()),
             routes: null === $provider ? 0 : $this->routeCount($provider->slug()),
-            reach: $this->reach($isContract, $provider),
+            reach: $this->reach($isCore, $provider),
         );
     }
 
-    private function coreState(bool $isContract, ?string $constraint, string $currentCore): CoreState
+    private function coreState(bool $isCore, ?string $constraint, string $currentCore): CoreState
     {
-        if ($isContract || null === $constraint) {
+        if ($isCore || null === $constraint) {
             return CoreState::NotApplicable;
         }
 
         return Semver::satisfies($currentCore, $constraint) ? CoreState::OnCore : CoreState::BehindCore;
     }
 
-    private function reach(bool $isContract, ?ModuleProviderInterface $provider): ModuleReach
+    private function reach(bool $isCore, ?ModuleProviderInterface $provider): ModuleReach
     {
-        if ($isContract) {
-            return ModuleReach::TheContract;
+        if ($isCore) {
+            return ModuleReach::TheCore;
         }
 
         // Infrastructure (no provider) and base modules are on everywhere; an

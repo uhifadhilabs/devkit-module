@@ -23,7 +23,7 @@ use Uhifadhi\Devkit\Console\Package\ResolvedPackage;
  * collection slice 1's `fixtures:demo` and command loader are built from, seen
  * from the side rather than run.
  *
- * It reads the two devkit seams — every tagged {@see ContentProviderInterface}
+ * It reads devkit's two tags — every tagged {@see ContentProviderInterface}
  * and {@see CommandProviderInterface} — and groups each contribution under the
  * module that shipped it, resolved from the provider's own package. devkit's own
  * `fixtures:demo` leads the list: devkit is itself a module that contributes one

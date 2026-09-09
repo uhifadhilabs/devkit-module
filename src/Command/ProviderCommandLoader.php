@@ -27,7 +27,7 @@ use Uhifadhi\Contracts\Devkit\CommandProviderInterface;
  * calling commands() on a live service, closing over that service's
  * dependencies — so they cannot be registered as `console.command` services at
  * compile time the way a fixed-name command is. A command LOADER is exactly the
- * seam Symfony provides for "resolve a command by name, lazily": this one wraps
+ * extension point Symfony provides for "resolve a command by name, lazily": this one wraps
  * the container's ContainerCommandLoader, answers for every descriptor name, and
  * delegates everything else — the application's own commands, including
  * devkit's fixtures:demo — to the inner loader untouched.

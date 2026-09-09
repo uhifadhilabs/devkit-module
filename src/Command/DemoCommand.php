@@ -26,9 +26,8 @@ use Uhifadhi\Devkit\Content\ContentOrderingException;
  * `fixtures:demo` — seed every installed module's demo content, in dependency
  * order.
  *
- * This is the successor to fixtures-module's one-shot `fixtures:all`
- * orchestrator, generalised: instead of a hand-written list of steps, it
- * collects every {@see ContentProviderInterface} the installed modules tagged,
+ * There is no hand-written list of steps to keep in step with the installed
+ * modules. It collects every {@see ContentProviderInterface} the modules tagged,
  * asks {@see ContentOrderer} to topologically sort them on their dependsOn()
  * edges, and calls load() on each in turn — printing the label and description
  * of each slice as it goes.

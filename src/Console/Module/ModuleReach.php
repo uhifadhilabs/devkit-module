@@ -17,19 +17,19 @@ namespace Uhifadhi\Devkit\Console\Module;
  * Where a package is switched on across the fleet — classified from what the
  * console can read WITHOUT a database.
  *
- * `TheContract` — the seam package, which is on in nothing because it is not a
+ * `TheCore` — the core package, which is on in nothing because it is not a
  * module. `HostWide` — infrastructure (a package with no module provider) and
  * base modules (a provider that answers base(): seeded active in every area).
  * `PerArea` — an installable capability module, switched on per area by an admin.
  *
- * THE EXACT PER-AREA COUNT ("on in 1 / 4") IS DEFERRED. It needs the seam's
+ * THE EXACT PER-AREA COUNT ("on in 1 / 4") IS DEFERRED. It needs the registry's
  * per-area ledger (a database read) AND the host's list of areas to divide by,
  * neither of which the standalone console has; see {@see ModuleRegistry}. The
  * reach here is the honest DB-free classification, not the count.
  */
 enum ModuleReach
 {
-    case TheContract;
+    case TheCore;
     case HostWide;
     case PerArea;
 }

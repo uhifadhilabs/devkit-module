@@ -38,7 +38,7 @@ use Uhifadhi\Devkit\Console\Package\PackageIntrospector;
  */
 final class Conformance
 {
-    private const string CONTRACTS_PACKAGE = 'uhifadhi/module-contracts';
+    private const string CORE_PACKAGE = 'uhifadhi/uhifadhi';
 
     public function __construct(
         private readonly ModuleRegistry $registry,
@@ -57,8 +57,8 @@ final class Conformance
         $routesStampedPassing = 0;
 
         foreach ($view->rows as $row) {
-            // The seam itself is not a module and takes no matrix row.
-            if (ModuleReach::TheContract === $row->reach) {
+            // The core itself is not a module and takes no matrix row.
+            if (ModuleReach::TheCore === $row->reach) {
                 continue;
             }
 
@@ -135,8 +135,8 @@ final class Conformance
             \sprintf('%s-module still pins the old core', $row->package->shortName),
             \sprintf(
                 'Constrains %s: %s — widen to admit %s and re-tag.',
-                self::CONTRACTS_PACKAGE,
-                $row->contractsConstraint ?? '?',
+                self::CORE_PACKAGE,
+                $row->coreConstraint ?? '?',
                 $currentCore,
             ),
             $row->package->name.'/composer.json',
@@ -169,7 +169,7 @@ final class Conformance
             $passing[] = new Finding(CheckState::Pass, 'No dev-main markers', \sprintf('%d %s carry no dev-main pin in their constraints.', $noDevMain, 1 === $noDevMain ? 'module' : 'modules'));
         }
         if ($routesStamped > 0) {
-            $passing[] = new Finding(CheckState::Pass, 'Module routes are stamped', \sprintf('%d module routes across the fleet carry the seam’s _uhifadhi_module stamp.', $totalRoutes));
+            $passing[] = new Finding(CheckState::Pass, 'Module routes are stamped', \sprintf('%d module routes across the fleet carry the registry’s _uhifadhi_module stamp.', $totalRoutes));
         }
 
         return $passing;

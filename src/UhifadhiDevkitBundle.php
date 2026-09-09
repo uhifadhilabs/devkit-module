@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Uhifadhi\Contracts\Devkit\CommandProviderInterface;
 use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
-use Uhifadhi\Devkit\Console\DependencyInjection\Compiler\CollectSeamsPass;
+use Uhifadhi\Devkit\Console\DependencyInjection\Compiler\CollectContributionPointsPass;
 use Uhifadhi\Devkit\DependencyInjection\Compiler\DecorateCommandLoaderPass;
 
 /**
@@ -28,7 +28,7 @@ use Uhifadhi\Devkit\DependencyInjection\Compiler\DecorateCommandLoaderPass;
  * It installs through require-dev, so it and everything it registers are absent
  * from a production build: require-dev IS the production firewall. Its job is to
  * gather the INERT provider classes other modules ship — declared through the
- * two contracts in uhifadhi/module-contracts, which live there precisely so an
+ * two contracts the core publishes, which live there precisely so an
  * always-installed module can name them even when devkit is not present — and
  * materialise them into things a developer can run:
  *
@@ -116,12 +116,12 @@ final class UhifadhiDevkitBundle extends AbstractBundle
         $container->addCompilerPass(new DecorateCommandLoaderPass(), PassConfig::TYPE_BEFORE_REMOVING, -16);
 
         /*
-         * Collect, for every known contribution seam, the classes registered on
+         * Collect, for every known contribution point, the classes registered on
          * its tag — the data the Wiring surface's inspector reads. It runs at
          * TYPE_BEFORE_REMOVING so every tag (including the ones this bundle adds
          * by registerForAutoconfiguration above) has settled and none has been
-         * optimised away. See CollectSeamsPass.
+         * optimised away. See CollectContributionPointsPass.
          */
-        $container->addCompilerPass(new CollectSeamsPass(), PassConfig::TYPE_BEFORE_REMOVING);
+        $container->addCompilerPass(new CollectContributionPointsPass(), PassConfig::TYPE_BEFORE_REMOVING);
     }
 }

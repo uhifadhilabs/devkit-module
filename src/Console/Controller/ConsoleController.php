@@ -19,14 +19,14 @@ use Twig\Environment;
 use Uhifadhi\Devkit\Console\Command\CommandInventory;
 use Uhifadhi\Devkit\Console\Doctor\Conformance;
 use Uhifadhi\Devkit\Console\Module\ModuleRegistry;
-use Uhifadhi\Devkit\Console\Wiring\SeamInspector;
+use Uhifadhi\Devkit\Console\Wiring\ContributionPointInspector;
 
 /**
  * THE DEV CONSOLE'S CONTROLLER — the four inspector surfaces, and their home.
  *
  * A PRESENTATION CONTROLLER, like the shell's: it reads what the introspection
  * services assemble — the command list, the module registry, the conformance
- * report, the seam inspector — and renders one of devkit's own templates in the
+ * report, the contribution-point inspector — and renders one of devkit's own templates in the
  * shell frame. It runs nothing and writes nothing; v1 is an inspector.
  *
  * TWO FIREWALLS KEEP IT OUT OF PRODUCTION. The first is Composer: devkit installs
@@ -46,7 +46,7 @@ final class ConsoleController
         private readonly CommandInventory $commands,
         private readonly ModuleRegistry $modules,
         private readonly Conformance $conformance,
-        private readonly SeamInspector $seams,
+        private readonly ContributionPointInspector $points,
         private readonly bool $debug,
     ) {
     }
@@ -59,7 +59,7 @@ final class ConsoleController
             'catalogue' => $this->commands->catalogue(),
             'registry' => $this->modules->view(),
             'report' => $this->conformance->report(),
-            'inspector' => $this->seams,
+            'inspector' => $this->points,
         ]);
     }
 
@@ -96,7 +96,7 @@ final class ConsoleController
         $this->assertAvailable();
 
         return $this->render('@UhifadhiDevkit/console/wiring.html.twig', [
-            'inspector' => $this->seams,
+            'inspector' => $this->points,
         ]);
     }
 

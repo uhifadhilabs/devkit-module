@@ -15,26 +15,26 @@ namespace Uhifadhi\Devkit\Console\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Uhifadhi\Devkit\Console\Wiring\SeamInspector;
+use Uhifadhi\Devkit\Console\Wiring\ContributionPointInspector;
 
 /**
- * READS THE TAGGED-SERVICE MAP AT COMPILE TIME and hands it to the seam inspector
+ * READS THE TAGGED-SERVICE MAP AT COMPILE TIME and hands it to the contribution-point inspector
  * as data.
  *
- * Which services carry a seam's tag is a compile-time fact — `findTaggedServiceIds`
+ * Which services carry a contribution point's tag is a compile-time fact — `findTaggedServiceIds`
  * is the only place it can be read, and a service cannot be given a live list of
  * "every class tagged X" the way it can be given a tagged_iterator of instances,
  * because the Wiring surface wants the CLASSES that registered, not the objects
  * (it never builds them, and some — a map layer, a KPI provider — would drag half
  * the platform into a dev page if it did). So the pass collects the class names
- * for every known seam and replaces the inspector's first argument with the map.
+ * for every known contribution point and replaces the inspector's first argument with the map.
  *
  * It runs at TYPE_BEFORE_REMOVING so every tag — including the ones devkit adds
  * by registerForAutoconfiguration — has settled and none has been optimised away.
  */
-final class CollectSeamsPass implements CompilerPassInterface
+final class CollectContributionPointsPass implements CompilerPassInterface
 {
-    private const string INSPECTOR_ID = 'devkit.console.seam_inspector';
+    private const string INSPECTOR_ID = 'devkit.console.contribution_points';
 
     public function process(ContainerBuilder $container): void
     {
@@ -43,7 +43,7 @@ final class CollectSeamsPass implements CompilerPassInterface
         }
 
         $collected = [];
-        foreach (array_keys(SeamInspector::KNOWN_SEAMS) as $tag) {
+        foreach (array_keys(ContributionPointInspector::CONTRIBUTION_POINTS) as $tag) {
             $classes = [];
             foreach (array_keys($container->findTaggedServiceIds($tag)) as $id) {
                 $class = $this->classOf($container, $id);

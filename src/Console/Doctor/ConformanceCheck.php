@@ -19,7 +19,7 @@ namespace Uhifadhi\Devkit\Console\Doctor;
  *
  * Three are COMPUTED from data the console already has: the core a package pins,
  * the dev-main markers in its constraints, and whether its module routes carry
- * the seam's stamp. Two are DEFERRED — extending the shell base and guarding
+ * the registry's stamp. Two are DEFERRED — extending the shell base and guarding
  * geometry reads for NULL both need source scanning devkit does not do yet — and
  * they say so ({@see CheckState::Deferred}) rather than showing green.
  */
@@ -79,9 +79,9 @@ enum ConformanceCheck: string
     public function caption(): string
     {
         return match ($this) {
-            self::PinsCore => 'The module admits the installed module-contracts version.',
+            self::PinsCore => 'The module admits the installed core version.',
             self::NoDevMain => 'No constraint carries a dev-main marker.',
-            self::RoutesStamped => 'The module’s routes carry the seam’s _uhifadhi_module stamp.',
+            self::RoutesStamped => 'The module’s routes carry the registry’s _uhifadhi_module stamp.',
             self::ExtendsShell => 'Domain templates extend the shell base — needs template scanning devkit does not do yet.',
             self::GeomGuards => 'Geometry reads guard for NULL — needs source scanning devkit does not do yet.',
         };

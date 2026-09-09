@@ -7,7 +7,7 @@
    .open-btn — so a builder reads it as the same product, just a dev surface.
    This file adds ONLY the vocabulary the four surfaces genuinely need that the
    shared system has no equivalent for: the assembled command list, the module
-   registry typography, the conformance matrix, the doctor checks and the seam
+   registry typography, the conformance matrix, the doctor checks and the point
    inspector. Everything rides the shared tokens (--acc, --ok, --warn, --fail,
    --fog, --tx, --ln, --ln2, --p1, --p2, --raised) so it flips with the theme.
    Nothing here is product chrome: devkit installs via require-dev and never
@@ -107,21 +107,21 @@
 .dk-check .bd{flex:1}
 .dk-check .t{font-weight:600;font-size:13px;color:var(--tx)}
 .dk-check .m{font-size:12px;color:var(--fog);margin-top:3px;line-height:1.5}
-.dk-check .m code,.dk-seam code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;
+.dk-check .m code,.dk-point code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;
   background:color-mix(in srgb,var(--fog) 12%,transparent);border-radius:5px;padding:1px 6px;color:var(--tx)}
 .dk-check .who{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;color:var(--dim);
   margin-top:5px;white-space:nowrap}
 
-/* ── WIRING — the seam/tag inspector. Each seam is a bordered plate with its
+/* ── WIRING — the tag inspector. Each point is a bordered plate with its
    collected providers listed underneath. ──────────────────────────────────── */
-.dk-seam{border:1px solid var(--ln);border-radius:13px;background:linear-gradient(180deg,var(--p1),var(--p2));
+.dk-point{border:1px solid var(--ln);border-radius:13px;background:linear-gradient(180deg,var(--p1),var(--p2));
   padding:16px 16px 8px;margin-bottom:16px}
-.dk-seam .sh{display:flex;align-items:center;gap:11px;margin-bottom:4px}
-.dk-seam .tag{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;color:var(--acc)}
-.dk-seam .sn{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;color:var(--fog);
+.dk-point .sh{display:flex;align-items:center;gap:11px;margin-bottom:4px}
+.dk-point .tag{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;color:var(--acc)}
+.dk-point .sn{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;color:var(--fog);
   border:1px solid var(--ln2);border-radius:99px;padding:3px 10px;margin-left:auto}
-.dk-seam .sd{font-size:12.5px;color:var(--fog);line-height:1.55;margin:0 0 10px}
-.dk-seam .sd b{color:var(--tx)}
+.dk-point .sd{font-size:12.5px;color:var(--fog);line-height:1.55;margin:0 0 10px}
+.dk-point .sd b{color:var(--tx)}
 .dk-prov{display:flex;align-items:center;gap:11px;padding:9px 2px;
   border-top:1px dashed color-mix(in srgb,var(--fog) 16%,transparent);font-size:12.5px}
 .dk-prov .dot{width:8px;height:8px;border-radius:2px;flex:none}

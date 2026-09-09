@@ -93,14 +93,14 @@ final class ConsolePageTest extends TestCase
         self::assertStringContainsString('geom guards', $text);
     }
 
-    public function testTheWiringSurfaceInspectsEverySeam(): void
+    public function testTheWiringSurfaceInspectsEveryContributionPoint(): void
     {
         $crawler = $this->get('/_devkit/wiring');
 
-        self::assertGreaterThan(0, $crawler->filter('.dk-seam')->count());
+        self::assertGreaterThan(0, $crawler->filter('.dk-point')->count());
         $text = $crawler->filter('div.pgbody')->text();
-        self::assertStringContainsString('uhifadhi.module', $text, 'The module seam is inspected.');
-        self::assertStringContainsString('uhifadhi.devkit.content_provider', $text, "devkit's own seams are inspected too.");
+        self::assertStringContainsString('uhifadhi.module', $text, 'A module registering itself is inspected.');
+        self::assertStringContainsString('uhifadhi.devkit.content_provider', $text, "devkit's own tags are inspected too.");
     }
 
     /**

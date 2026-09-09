@@ -34,8 +34,8 @@ final class ModuleRegistryTest extends TestCase
 
         self::assertSame(CoreState::OnCore, $this->row($view->rows, 'area')->coreState, '^0.5 admits 0.5.1.');
         self::assertSame(CoreState::BehindCore, $this->row($view->rows, 'patrol')->coreState, '^0.4 does not admit 0.5.1.');
-        self::assertSame(CoreState::NotApplicable, $this->row($view->rows, 'shell')->coreState, 'shell pins no contracts constraint.');
-        self::assertSame(CoreState::NotApplicable, $this->row($view->rows, 'module-contracts')->coreState, 'the seam is not measured against itself.');
+        self::assertSame(CoreState::NotApplicable, $this->row($view->rows, 'storage')->coreState, 'storage pins no core constraint.');
+        self::assertSame(CoreState::NotApplicable, $this->row($view->rows, 'uhifadhi')->coreState, 'the core is not measured against itself.');
     }
 
     public function testItClassifiesReachWithoutADatabase(): void
@@ -44,8 +44,8 @@ final class ModuleRegistryTest extends TestCase
 
         self::assertSame(ModuleReach::HostWide, $this->row($view->rows, 'area')->reach, 'a base module is on everywhere.');
         self::assertSame(ModuleReach::PerArea, $this->row($view->rows, 'patrol')->reach, 'an installable module is per-area.');
-        self::assertSame(ModuleReach::HostWide, $this->row($view->rows, 'shell')->reach, 'infrastructure with no provider is host-wide.');
-        self::assertSame(ModuleReach::TheContract, $this->row($view->rows, 'module-contracts')->reach);
+        self::assertSame(ModuleReach::HostWide, $this->row($view->rows, 'storage')->reach, 'infrastructure with no provider is host-wide.');
+        self::assertSame(ModuleReach::TheCore, $this->row($view->rows, 'uhifadhi')->reach);
     }
 
     public function testItCountsPermissionsAndStampedRoutesFromTheSeamAndRouter(): void
@@ -56,10 +56,10 @@ final class ModuleRegistryTest extends TestCase
         self::assertSame(9, $this->row($view->rows, 'area')->routes);
         self::assertSame(1, $this->row($view->rows, 'patrol')->permissions);
         self::assertSame(8, $this->row($view->rows, 'patrol')->routes);
-        self::assertSame(0, $this->row($view->rows, 'shell')->permissions, 'infrastructure declares none through the seam.');
+        self::assertSame(0, $this->row($view->rows, 'storage')->permissions, 'infrastructure declares none through the registry.');
 
         self::assertSame(1, $view->onCoreCount());
-        self::assertSame(2, $view->pinsCoreCount(), 'area and patrol pin the contracts; shell and the seam do not.');
+        self::assertSame(2, $view->pinsCoreCount(), 'area and patrol pin the core; shell and the core itself do not.');
         self::assertSame(3, $view->totalPermissions());
         self::assertSame(17, $view->totalRoutes());
     }
@@ -74,15 +74,15 @@ final class ModuleRegistryTest extends TestCase
 
         $packages = new FakePackageIntrospector(
             fleet: [
-                ResolvedPackage::of('uhifadhi/module-contracts', 'v0.5.1'),
+                ResolvedPackage::of('uhifadhi/uhifadhi', 'v0.5.1'),
                 $areaPackage,
                 $patrolPackage,
-                ResolvedPackage::of('uhifadhi/shell-module', '0.8.0'),
+                ResolvedPackage::of('uhifadhi/storage-module', '0.8.0'),
             ],
             requirements: [
-                'uhifadhi/area-module' => ['uhifadhi/module-contracts' => '^0.5'],
-                'uhifadhi/patrol-module' => ['uhifadhi/module-contracts' => '^0.4', 'uhifadhi/seam-module' => '^0.3 || dev-main'],
-                'uhifadhi/shell-module' => [],
+                'uhifadhi/area-module' => ['uhifadhi/uhifadhi' => '^0.5'],
+                'uhifadhi/patrol-module' => ['uhifadhi/uhifadhi' => '^0.4'],
+                'uhifadhi/storage-module' => [],
             ],
         );
         $packages->place($area, $areaPackage);

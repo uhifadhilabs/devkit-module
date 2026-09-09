@@ -52,7 +52,7 @@ return static function (ContainerConfigurator $container): void {
         ->tag('console.command');
 
     /*
-     * The CommandProviderInterface half of the seam — the modules' descriptors
+     * The CommandProviderInterface half of the contract — the modules' descriptors
      * becoming real console commands — is wired NOT here but in
      * DecorateCommandLoaderPass. Their names are only known at runtime, so it is
      * a command LOADER decorating the framework's own; and that loader is created

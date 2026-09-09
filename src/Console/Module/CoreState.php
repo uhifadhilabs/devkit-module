@@ -14,13 +14,13 @@ declare(strict_types=1);
 namespace Uhifadhi\Devkit\Console\Module;
 
 /**
- * Whether a package pins the module core the installation is actually running.
+ * Whether a package pins the core the installation is actually running.
  *
- * `OnCore` — its `uhifadhi/module-contracts` constraint admits the installed
- * contracts version. `BehindCore` — it pins an older core and would need
+ * `OnCore` — its `uhifadhi/uhifadhi` constraint admits the installed
+ * core version. `BehindCore` — it pins an older core and would need
  * widening and re-tagging. `NotApplicable` — it declares no constraint on the
  * contracts at all: the contracts package itself (it IS the core), and the
- * infrastructure packages that render the fleet without pinning the seam.
+ * infrastructure packages that render the fleet without pinning the core.
  */
 enum CoreState
 {

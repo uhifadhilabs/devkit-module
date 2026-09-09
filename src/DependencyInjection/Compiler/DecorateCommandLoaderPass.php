@@ -44,7 +44,7 @@ use Uhifadhi\Devkit\UhifadhiDevkitBundle;
  *
  * Guarded on the loader's presence: an installation without the console (no
  * ConsoleBundle) has no loader to wrap, and there is nothing for devkit's
- * command seam to do there.
+ * command extension point to do there.
  */
 final class DecorateCommandLoaderPass implements CompilerPassInterface
 {

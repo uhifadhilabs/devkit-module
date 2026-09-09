@@ -37,10 +37,10 @@ use Uhifadhi\Devkit\UhifadhiDevkitBundle;
  *
  * The kernel plays the ALWAYS-INSTALLED MODULES: it tags a few fixture providers
  * — demo-content, a command, and two module providers on the `uhifadhi.module`
- * seam — by hand, exactly as a reusable module bundle tags its own. devkit's
- * introspection then reads them just as it would a real dev install. Seam-module
- * is intentionally NOT registered: the console reads the module tag as a string
- * and never needs the seam's runtime (or its Doctrine) to inspect it.
+ * tag — by hand, exactly as a reusable module bundle tags its own. devkit's
+ * introspection then reads them just as it would a real dev install. The
+ * registry is intentionally NOT registered: the console reads the module tag as
+ * a string and never needs the registry's runtime (or its Doctrine) to inspect it.
  */
 final class ConsoleTestKernel extends Kernel
 {
@@ -103,7 +103,7 @@ final class ConsoleTestKernel extends Kernel
         $services->set('devkit.test.command_provider', RecordingCommandProvider::class)
             ->tag(UhifadhiDevkitBundle::COMMAND_PROVIDER_TAG);
 
-        // Two module providers on the module seam: a base one (host-wide) and an
+        // Two module providers on the module tag: a base one (host-wide) and an
         // installable one that declares a permission (per-area).
         $services->set('devkit.test.module.areas', FixtureModuleProvider::class)
             ->args(['areas', 'Areas', true, 0])

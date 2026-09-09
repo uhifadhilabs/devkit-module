@@ -5,7 +5,7 @@ Devkit is **the** dev-only module for a uhifadhi installation. It installs throu
 build. `require-dev` is the production firewall.
 
 Its job is to be a **collector**. Other modules ship **inert provider classes**
-declared through two contracts in `uhifadhi/module-contracts`, and devkit gathers
+declared through two contracts the core publishes, and devkit gathers
 them and materialises real developer tools — only in a dev install, because that
 is the only place devkit exists.
 
@@ -16,11 +16,12 @@ is the only place devkit exists.
 - [Descriptor commands](#descriptor-commands)
 - [How a module contributes](#how-a-module-contributes)
 - [The dev console](#the-dev-console)
-- [Why the contracts live in `module-contracts`, not here](#why-the-contracts-live-in-module-contracts-not-here)
+- [Why the contracts live in the core, not here](#why-the-contracts-live-in-the-core-not-here)
+- [Installing it](#installing-it)
 
 ## What it collects
 
-Two seams, both defined in `uhifadhi/module-contracts` under `Devkit\`:
+Two contracts, both published by `uhifadhi/uhifadhi` under `Uhifadhi\Contracts\Devkit\`:
 
 - `ContentProviderInterface` — a slice of demo content to seed, identified by a
   `key()` and ordered against other slices by `dependsOn()`.
@@ -42,10 +43,6 @@ a cycle each fail with a message naming the offending keys, rather than guessing
 an order that would break far from its cause.
 
 An installation with no providers registered seeds nothing and exits cleanly.
-
-This command is the successor to `fixtures-module`'s hand-written `fixtures:all`
-orchestrator, generalised: the step list is no longer written by hand, it is
-derived from the providers the installed modules contribute.
 
 ## Descriptor commands
 
@@ -80,20 +77,20 @@ is inert data. In a dev install devkit is present and collects it.
 ## The dev console
 
 Devkit also ships a **dev-only inspector console** — the home a module builder
-leaves open on a second monitor. It renders in the `uhifadhi/shell-module` frame
+leaves open on a second monitor. It renders in the core shell's frame
 and has four surfaces, reached under `/_devkit`:
 
 - **Commands** — the assembled dev commands and demo-content loaders, grouped by
   the module that contributed them (the same collection `fixtures:demo` and the
   descriptor commands are built from, seen from the side).
 - **Modules** — the installed fleet as one register: each package's version, the
-  core it pins (`Composer\Semver` against the installed `module-contracts`), its
+  core it pins (`Composer\Semver` against the installed `uhifadhi/uhifadhi`), its
   declared permissions and stamped routes, and its DB-free reach classification.
 - **Doctor** — the compatibility matrix and the findings that turn it into
   pass / warn / fail. Devkit computes the checks it can read (pins the core, no
   `dev-main` marker, routes stamped) and **flags the rest as deferred** rather
   than faking them green.
-- **Wiring** — the tag inspector: for every contribution seam the platform
+- **Wiring** — the tag inspector: for every contribution point the platform
   defines, who is registered and how many collected.
 
 The console **reads**; it runs nothing (v1). The Run affordances are drawn
@@ -113,14 +110,37 @@ when@dev:
 
 The introspection is DB-free: everything reads Composer, the router and the
 tagged services. The one thing it cannot read standalone — the exact **per-area**
-on/off count — needs the seam's per-area ledger (a database) and the host's list
+on/off count — needs the registry's per-area ledger (a database) and the host's list
 of areas, and is flagged deferred on the Modules surface rather than faked.
 
-## Why the contracts live in `module-contracts`, not here
+## Why the contracts live in the core, not here
 
 The inert provider classes ship inside always-installed modules, so their
 `implements` clause must resolve at runtime **even when devkit is absent**. An
 interface those modules point at therefore has to live in a package they always
-have — `uhifadhi/module-contracts` — and devkit depends on the same interfaces to
-collect the providers. Neither side depends on the other. See
-`module-contracts/docs/devkit-contracts.md`.
+have — `uhifadhi/uhifadhi` — and devkit depends on the same interfaces to
+collect the providers. Neither side depends on the other. See the core's
+`src/Uhifadhi/Contracts/docs/devkit-contracts.md`.
+
+## Installing it
+
+```console
+composer require --dev uhifadhi/devkit-module
+```
+
+The commands the installed modules describe appear on the console at once,
+including the core's own:
+
+```console
+bin/console team:user:create ada@example.test Ada Mwangi --tier=super-admin
+bin/console fixtures:demo
+```
+
+The first is how an installation gets its first administrator — the one account
+no screen can make, because every screen is behind the sign-in it does not yet
+have. Leave `--password=` off and the passphrase is read from standard input, so
+it need never reach a shell history:
+
+```console
+printf '%s' "$PASSPHRASE" | bin/console team:user:create ada@example.test Ada Mwangi
+```

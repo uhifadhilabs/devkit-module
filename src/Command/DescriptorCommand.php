@@ -22,7 +22,7 @@ use Uhifadhi\Contracts\Devkit\CommandDescriptor;
 /**
  * A real Symfony console command wrapping ONE {@see CommandDescriptor}.
  *
- * This is devkit's half of the CommandProviderInterface seam. A module ships an
+ * This is devkit's half of the CommandProviderInterface contract. A module ships an
  * inert provider returning descriptors — a name, a help line, and a
  * `\Closure(list<string>): int` — and refuses to name symfony/console so the
  * contract stays framework-free and nothing builds a Command in a production

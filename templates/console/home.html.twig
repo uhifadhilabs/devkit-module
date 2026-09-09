@@ -18,7 +18,7 @@
         <div class="c"><span class="tab">commands</span><div class="kpi"><b>{{ catalogue.total }}</b><div class="sub">from {{ catalogue.contributorCount }} modules &middot; {{ catalogue.demoContentCount }} demo loaders</div></div></div>
         <div class="c"><span class="tab">modules</span><div class="kpi"><b>{{ registry.installedCount }}</b><div class="sub">installed &middot; {{ registry.onCoreCount }} on current core</div></div></div>
         <div class="c"><span class="tab">doctor</span><div class="kpi{{ (report.warnCount + report.failCount) > 0 ? ' hot' }}"><b>{{ report.warnCount }}<em>warn</em> {{ report.failCount }}<em>fail</em></b><div class="sub">of {{ report.computedCheckCount }} doctor checks</div></div></div>
-        <div class="c"><span class="tab">wiring</span><div class="kpi"><b>{{ inspector.seamCount }}</b><div class="sub">{{ inspector.providerCount }} providers collected</div></div></div>
+        <div class="c"><span class="tab">wiring</span><div class="kpi"><b>{{ inspector.pointCount }}</b><div class="sub">{{ inspector.providerCount }} providers collected</div></div></div>
     </div>
 
     <h2 class="zone">Run something</h2>
@@ -47,10 +47,10 @@
             {% for f in report.attention %}{{ parts.finding(f) }}{% endfor %}
             {% for f in report.passing|slice(0, 1) %}{{ parts.finding(f) }}{% endfor %}
         </div>
-        <div class="c"><span class="tab">wiring &mdash; seams collected<a class="more" href="{{ path('devkit_console_wiring') }}" style="margin-left:auto">Inspect wiring &rarr;</a></span>
+        <div class="c"><span class="tab">wiring &mdash; points collected<a class="more" href="{{ path('devkit_console_wiring') }}" style="margin-left:auto">Inspect wiring &rarr;</a></span>
             <table class="tbl">
-                <tr><th>seam</th><th class="num">providers</th></tr>
-                {% for s in inspector.seams|sort((a, b) => b.count <=> a.count)|slice(0, 5) %}
+                <tr><th>point</th><th class="num">providers</th></tr>
+                {% for s in inspector.points|sort((a, b) => b.count <=> a.count)|slice(0, 5) %}
                     <tr><td class="mono">{{ s.tag }}</td><td class="num">{{ s.count }}</td></tr>
                 {% endfor %}
             </table>

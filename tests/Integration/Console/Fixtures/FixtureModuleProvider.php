@@ -19,7 +19,7 @@ use Uhifadhi\Contracts\ModuleProviderTrait;
 
 /**
  * A stand-in module provider — what an always-installed module tags with
- * `uhifadhi.module`, so the console's registry and seam inspector have a fleet to
+ * `uhifadhi.module`, so the console's registry and contribution-point inspector have a fleet to
  * read in a test without a real module bundle for every scenario.
  */
 final class FixtureModuleProvider implements ModuleProviderInterface

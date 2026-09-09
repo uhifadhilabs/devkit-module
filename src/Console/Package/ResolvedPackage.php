@@ -21,9 +21,9 @@ namespace Uhifadhi\Devkit\Console\Package;
  * `uhifadhi/patrol-module` is "patrol" in the module grid, the sub-nav and every
  * console surface. It is derived, never stored twice: strip the vendor and the
  * `-module` suffix, and what remains is the slug the rest of the fleet already
- * uses. The one package that is not a module — `uhifadhi/module-contracts`, the
- * seam the modules pin — keeps its own name, because "contracts" is not a module
- * and calling it one would be the first lie a registry tells.
+ * uses. The one package that is not a module — `uhifadhi/uhifadhi`, the core the
+ * modules pin — keeps its own name, because the core is not a module and
+ * calling it one would be the first lie a registry tells.
  */
 final readonly class ResolvedPackage
 {
@@ -43,8 +43,8 @@ final readonly class ResolvedPackage
     }
 
     /**
-     * `uhifadhi/patrol-module` → `patrol`; `uhifadhi/module-contracts` →
-     * `module-contracts` (it is the seam, not a module).
+     * `uhifadhi/patrol-module` → `patrol`; `uhifadhi/uhifadhi` → `uhifadhi`
+     * (it is the core, not a module).
      */
     private static function shorten(string $name): string
     {

@@ -30,9 +30,9 @@ final class ConformanceTest extends TestCase
     {
         $report = $this->conformance()->report();
 
-        // Rows are modules; the seam itself takes no row.
+        // Rows are modules; the core itself takes no row.
         $shortNames = array_map(static fn (MatrixRow $r): string => $r->package->shortName, $report->matrix);
-        self::assertSame(['area', 'patrol', 'shell'], $shortNames);
+        self::assertSame(['area', 'patrol', 'storage'], $shortNames);
 
         $patrol = $this->matrixRow($report->matrix, 'patrol');
         self::assertSame(CheckState::Warn, $patrol->cell(ConformanceCheck::PinsCore), 'patrol pins the old core.');
@@ -87,15 +87,15 @@ final class ConformanceTest extends TestCase
 
         $packages = new FakePackageIntrospector(
             fleet: [
-                ResolvedPackage::of('uhifadhi/module-contracts', 'v0.5.1'),
+                ResolvedPackage::of('uhifadhi/uhifadhi', 'v0.5.1'),
                 $areaPackage,
                 $patrolPackage,
-                ResolvedPackage::of('uhifadhi/shell-module', '0.8.0'),
+                ResolvedPackage::of('uhifadhi/storage-module', '0.8.0'),
             ],
             requirements: [
-                'uhifadhi/area-module' => ['uhifadhi/module-contracts' => '^0.5'],
-                'uhifadhi/patrol-module' => ['uhifadhi/module-contracts' => '^0.4', 'uhifadhi/seam-module' => '^0.3 || dev-main'],
-                'uhifadhi/shell-module' => [],
+                'uhifadhi/area-module' => ['uhifadhi/uhifadhi' => '^0.5'],
+                'uhifadhi/patrol-module' => ['uhifadhi/uhifadhi' => '^0.4', 'uhifadhi/storage-module' => '^0.3 || dev-main'],
+                'uhifadhi/storage-module' => [],
             ],
         );
         $packages->place($area, $areaPackage);

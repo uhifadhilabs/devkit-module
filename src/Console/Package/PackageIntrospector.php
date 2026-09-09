@@ -47,7 +47,7 @@ interface PackageIntrospector
 
     /**
      * Every uhifadhi package on disk, in Composer's order — the fleet the
-     * registry lists. Includes the seam (`uhifadhi/module-contracts`) and the
+     * registry lists. Includes the core (`uhifadhi/uhifadhi`) and the
      * infrastructure packages that carry no module provider.
      *
      * @return list<ResolvedPackage>
