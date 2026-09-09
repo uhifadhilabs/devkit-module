@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Uhifadhi\Devkit\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,6 +55,14 @@ final class DescriptorCommand extends Command
 
     protected function configure(): void
     {
+        // Core's own HelpCommand::configure() opens the same way
+        // (vendor/symfony/console/Command/HelpCommand.php, line 32) and for the
+        // same reason: a command whose arguments are not known until runtime
+        // cannot let the binder reject them. Command::run() catches the binding
+        // exception when this is set (Command.php, lines 236-243) and carries on
+        // to execute().
+        $this->ignoreValidationErrors();
+
         $this
             ->setDescription($this->descriptor->description)
             ->addArgument(
@@ -65,9 +74,55 @@ final class DescriptorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var list<string> $arguments */
-        $arguments = $input->getArgument('arguments');
+        return ($this->descriptor->handler)(
+            self::tail($input),
+            new ConsoleCommandIo($input, $output),
+        );
+    }
 
-        return ($this->descriptor->handler)($arguments, new ConsoleCommandIo($input, $output));
+    /**
+     * EXACTLY WHAT THE PERSON TYPED AFTER THE COMMAND NAME — options included,
+     * in the order they wrote them.
+     *
+     * The bound `arguments` argument cannot answer this. Binding is where the
+     * console decides that `--password=x` is an option, and an option this
+     * command deliberately never declared is one the binder refuses outright —
+     * so until the raw tokens were forwarded, every descriptor taking an option
+     * died on `The "--password" option does not exist.` with its handler never
+     * reached. ignoreValidationErrors() stops the refusal, but it does not put
+     * the token back into the argument: the parse that would have placed it
+     * there is the parse that threw.
+     *
+     * ArgvInput::getRawTokens(true) is the sanctioned answer — added in Symfony
+     * 7.1 for exactly this, handing a command line to something that will parse
+     * it itself. `true` strips everything up to and including the first
+     * argument, which is the command name, so what remains is the tail and never
+     * the application's own options (ArgvInput.php, lines 361-381).
+     *
+     * An input that is not an ArgvInput has no raw tokens to give — the
+     * ArrayInput a CommandTester builds, say — and there the bound argument is
+     * both available and right, because nothing was typed to be misread.
+     *
+     * @return list<string>
+     */
+    private static function tail(InputInterface $input): array
+    {
+        if ($input instanceof ArgvInput) {
+            return $input->getRawTokens(true);
+        }
+
+        $arguments = $input->hasArgument('arguments') ? $input->getArgument('arguments') : [];
+        if (!\is_array($arguments)) {
+            return [];
+        }
+
+        $tail = [];
+        foreach ($arguments as $argument) {
+            if (\is_string($argument)) {
+                $tail[] = $argument;
+            }
+        }
+
+        return $tail;
     }
 }

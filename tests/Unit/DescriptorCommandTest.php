@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Uhifadhi\Devkit\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Uhifadhi\Contracts\Devkit\CommandDescriptor;
@@ -151,6 +154,123 @@ final class DescriptorCommandTest extends TestCase
         ));
 
         self::assertSame(7, new CommandTester($command)->execute([]));
+    }
+
+    /**
+     * OPTION-LOOKING TOKENS REACH THE HANDLER, which is the whole of the
+     * descriptor's bargain: the contract models no options precisely so that a
+     * handler can parse its own tail, and a wrapper that let the console
+     * validate that tail first would make the bargain unkeepable. Symfony
+     * rejects an unknown `--option` while binding, so before this passed the
+     * raw tokens through, every command that took one — `team:user:create
+     * --password=…` among them — died with "The --password option does not
+     * exist." and never reached its handler at all.
+     */
+    public function testOptionLookingTokensReachTheHandler(): void
+    {
+        $received = null;
+        $status = self::runArgv(
+            self::capturing($received),
+            ['bin/console', 'demo:echo', 'a@b.c', 'Ada', '--password=x', '--tier=admin'],
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame(['a@b.c', 'Ada', '--password=x', '--tier=admin'], $received);
+    }
+
+    /**
+     * IN THE ORDER THEY WERE TYPED, and with the separator and the bare
+     * double-dashes intact — the handler is promised what the person wrote
+     * after the command name, not a normalised reading of it.
+     */
+    public function testTheTailKeepsItsOrderAndItsOddities(): void
+    {
+        $received = null;
+        $status = self::runArgv(
+            self::capturing($received),
+            ['bin/console', 'demo:echo', '--fresh', 'alpha', '--count=10', '-v', 'beta'],
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame(['--fresh', 'alpha', '--count=10', '-v', 'beta'], $received);
+    }
+
+    /**
+     * AND THE APPLICATION'S OWN OPTIONS ARE NOT THE COMMAND'S TAIL. What comes
+     * before the command name belongs to the console, so the tail begins after
+     * it — which is exactly where ArgvInput::getRawTokens(true) starts.
+     */
+    public function testWhatPrecedesTheCommandNameIsNotPartOfTheTail(): void
+    {
+        $received = null;
+        $status = self::runArgv(
+            self::capturing($received),
+            ['bin/console', '--no-ansi', 'demo:echo', 'alpha'],
+        );
+
+        self::assertSame(0, $status);
+        self::assertSame(['alpha'], $received);
+    }
+
+    /**
+     * `--help` STILL DESCRIBES THE COMMAND rather than being swallowed into the
+     * tail: the application intercepts it before the command runs, so a
+     * descriptor keeps the one piece of console courtesy it has — its help line
+     * — and the handler is not invoked.
+     */
+    public function testHelpStillDescribesADescriptorCommand(): void
+    {
+        $received = null;
+        $output = new BufferedOutput();
+        $status = self::runArgv(self::capturing($received), ['bin/console', 'demo:echo', '--help'], $output);
+
+        self::assertSame(0, $status);
+        self::assertStringContainsString('Captures its argument tail.', $output->fetch());
+        self::assertNull($received, 'Asking for help runs the help command, not the handler.');
+    }
+
+    /**
+     * A tester binds an ArrayInput rather than an ArgvInput — there are no raw
+     * tokens to take, so the tail comes off the bound argument, and the tests
+     * that drive a command that way keep working.
+     */
+    public function testTheTailIsStillReadWhenThereAreNoRawTokens(): void
+    {
+        $received = null;
+        $tester = new CommandTester(self::capturing($received));
+        $tester->execute(['arguments' => ['alpha', '--count=10']]);
+
+        self::assertSame(['alpha', '--count=10'], $received);
+    }
+
+    /** A command whose handler records the tail it was handed. */
+    private static function capturing(mixed &$received): DescriptorCommand
+    {
+        return new DescriptorCommand(new CommandDescriptor(
+            'demo:echo',
+            'Captures its argument tail.',
+            static function (array $arguments) use (&$received): int {
+                $received = $arguments;
+
+                return 0;
+            },
+        ));
+    }
+
+    /**
+     * The command as a person actually reaches it: registered on an
+     * application and driven by the tokens of a real command line.
+     *
+     * @param list<string> $argv
+     */
+    private static function runArgv(DescriptorCommand $command, array $argv, ?BufferedOutput $output = null): int
+    {
+        $application = new Application();
+        $application->setAutoExit(false);
+        $application->setCatchExceptions(false);
+        $application->addCommand($command);
+
+        return $application->run(new ArgvInput($argv), $output ?? new BufferedOutput());
     }
 
     /** A command that says one thing on each stream. */
