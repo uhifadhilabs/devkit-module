@@ -128,6 +128,16 @@ collect the providers. Neither side depends on the other. See the core's
 composer require --dev uhifadhi/devkit-module
 ```
 
+Until the core is on Packagist, the installation names where it comes from —
+a repository entry in a dependency's own `composer.json` is ignored, so this
+line belongs in the application's:
+
+```json
+"repositories": [
+    { "type": "vcs", "url": "https://github.com/uhifadhilabs/uhifadhi" }
+]
+```
+
 The commands the installed modules describe appear on the console at once,
 including the core's own:
 

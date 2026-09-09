@@ -20,6 +20,27 @@ jobs:
       matrix:
         php: ['8.4', '8.5']
 
+    # The installation suite boots the whole core against a real database,
+    # because "creates an administrator" and "seeds the demo organisation" are
+    # claims about rows. The collector's own suites need none of it.
+    services:
+      postgres:
+        image: ghcr.io/fundistadi/postgis:17
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: uhifadhi_devkit_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U app"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      UHIFADHI_TEST_DATABASE_URL: "postgresql://app:app@127.0.0.1:5432/uhifadhi_devkit_test?serverVersion=17&charset=utf8"
+
     steps:
       - uses: actions/checkout@v4
 
