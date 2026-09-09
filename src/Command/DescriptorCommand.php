@@ -32,11 +32,18 @@ use Uhifadhi\Contracts\Devkit\CommandDescriptor;
  *
  * THE HANDLER IS THE PROCESS CONTRACT, NOT THE CONSOLE ONE. The descriptor's
  * closure takes the argument tail (everything the person typed after the command
- * name, as a list<string>) and returns a POSIX exit code. So the wrapper defines
- * exactly one thing — a variadic argument that collects that tail — hands it to
- * the closure, and uses the returned int as its own exit status. It does not
- * model options: a command that wants richer input parses the tail itself, or
- * reaches through the service the closure closes over.
+ * name, as a list<string>) and a CommandIo to speak through, and returns a POSIX
+ * exit code. So the wrapper defines exactly one thing — a variadic argument that
+ * collects that tail — hands it over with the io, and uses the returned int as
+ * its own exit status. It does not model options: a command that wants richer
+ * input parses the tail itself, or reaches through the service the closure
+ * closes over.
+ *
+ * THE IO IS WHERE THIS COMMAND EARNS ITS KEEP. A handler holds no console, so
+ * without a channel its only way to say what it did is \STDOUT — output that no
+ * `--quiet` can silence and no tester can capture. {@see ConsoleCommandIo} binds
+ * the contract's three verbs to the very input and output this execution was
+ * given, so a module's messages obey the flags the person actually typed.
  */
 final class DescriptorCommand extends Command
 {
@@ -61,6 +68,6 @@ final class DescriptorCommand extends Command
         /** @var list<string> $arguments */
         $arguments = $input->getArgument('arguments');
 
-        return ($this->descriptor->handler)($arguments);
+        return ($this->descriptor->handler)($arguments, new ConsoleCommandIo($input, $output));
     }
 }

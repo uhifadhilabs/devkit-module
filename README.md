@@ -26,7 +26,11 @@ Two contracts, both published by `uhifadhi/uhifadhi` under `Uhifadhi\Contracts\D
 - `ContentProviderInterface` — a slice of demo content to seed, identified by a
   `key()` and ordered against other slices by `dependsOn()`.
 - `CommandProviderInterface` — a bag of `CommandDescriptor`s, each a name, a help
-  line, and a `\Closure(list<string>): int` that does the work.
+  line, and a `\Closure(list<string>, CommandIo): int` that does the work.
+- `CommandIo` — the three streams that closure speaks through: `write()` to
+  stdout, `error()` to stderr, `readLine()` from stdin. devkit binds them to the
+  console's real input and output, so a handler that has never heard of
+  `--quiet` obeys it.
 
 A module tags its provider services and devkit `tagged_iterator`s them.
 
@@ -51,8 +55,14 @@ becomes a real Symfony console command. Because a descriptor's name is only know
 at runtime, devkit registers them through a command **loader** that decorates the
 framework's own — it answers for every descriptor name and delegates everything
 else, including `fixtures:demo`, to the inner loader. The wrapper passes the
-argument tail to the descriptor's closure as a `list<string>` and uses the
-returned int as the command's exit code.
+argument tail to the descriptor's closure as a `list<string>`, hands it a
+`CommandIo` bound to this execution's input and output, and uses the returned int
+as the command's exit code.
+
+A module's handler therefore never touches `\STDOUT` or `\STDIN` itself. It has
+no console to write to and reaching for the file descriptor would escape the one
+it was given — output that ignores `--quiet`, that a caller capturing the
+command cannot see, and that appears uninvited in a test run.
 
 ## How a module contributes
 
