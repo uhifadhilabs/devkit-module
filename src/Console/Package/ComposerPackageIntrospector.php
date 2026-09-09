@@ -85,7 +85,24 @@ final class ComposerPackageIntrospector implements PackageIntrospector
             return null;
         }
 
-        return ResolvedPackage::of($name, InstalledVersions::getPrettyVersion($name) ?? 'dev');
+        /*
+         * A PACKAGE MAY ANSWER TO NAMES NOTHING WAS EVER INSTALLED UNDER. One
+         * package can hold the names it could later be split into, and Composer
+         * reports each of them as installed — with no version and no directory,
+         * because there is no directory: the code is on disk once, under the
+         * name that was actually required. Those stand-in names are not packages
+         * a reader can open, version or install, so the console does not resolve
+         * them; the package that answers for them is already in the fleet under
+         * its own name.
+         *
+         * @see https://getcomposer.org/doc/04-schema.md#replace
+         */
+        $version = InstalledVersions::getPrettyVersion($name);
+        if (null === $version || null === InstalledVersions::getInstallPath($name)) {
+            return null;
+        }
+
+        return ResolvedPackage::of($name, $version);
     }
 
     public function fleet(): array

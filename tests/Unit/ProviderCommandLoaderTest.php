@@ -18,10 +18,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Tester\CommandTester;
+use Uhifadhi\Contracts\Devkit\CommandDescriptor;
 use Uhifadhi\Devkit\Command\DescriptorCommand;
 use Uhifadhi\Devkit\Command\ProviderCommandLoader;
 use Uhifadhi\Devkit\Tests\Fixtures\FakeCommandProvider;
-use Uhifadhi\ModuleContracts\Devkit\CommandDescriptor;
 
 /**
  * The loader that turns the modules' descriptors into console commands: it

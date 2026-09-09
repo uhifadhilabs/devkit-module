@@ -14,10 +14,10 @@ declare(strict_types=1);
 namespace Uhifadhi\Devkit\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
 use Uhifadhi\Devkit\Content\ContentOrderer;
 use Uhifadhi\Devkit\Content\ContentOrderingException;
 use Uhifadhi\Devkit\Tests\Fixtures\FakeContentProvider;
-use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
 
 /**
  * The topological sort behind fixtures:demo: dependsOn() edges become a run

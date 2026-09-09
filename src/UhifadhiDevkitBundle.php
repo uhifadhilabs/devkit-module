@@ -17,10 +17,10 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Uhifadhi\Contracts\Devkit\CommandProviderInterface;
+use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
 use Uhifadhi\Devkit\Console\DependencyInjection\Compiler\CollectSeamsPass;
 use Uhifadhi\Devkit\DependencyInjection\Compiler\DecorateCommandLoaderPass;
-use Uhifadhi\ModuleContracts\Devkit\CommandProviderInterface;
-use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
 
 /**
  * Devkit — THE dev-only module, and a collector.

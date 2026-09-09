@@ -16,8 +16,8 @@ namespace Uhifadhi\Devkit\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
-use Uhifadhi\ModuleContracts\Devkit\CommandDescriptor;
-use Uhifadhi\ModuleContracts\Devkit\CommandProviderInterface;
+use Uhifadhi\Contracts\Devkit\CommandDescriptor;
+use Uhifadhi\Contracts\Devkit\CommandProviderInterface;
 
 /**
  * Makes the modules' {@see CommandDescriptor}s appear as real console commands

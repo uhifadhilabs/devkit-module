@@ -15,10 +15,10 @@ namespace Uhifadhi\Devkit\Console\Module;
 
 use Composer\Semver\Semver;
 use Symfony\Component\Routing\RouterInterface;
+use Uhifadhi\Bundle\RegistryBundle\RegistryBundle;
+use Uhifadhi\Contracts\ModuleProviderInterface;
 use Uhifadhi\Devkit\Console\Package\PackageIntrospector;
 use Uhifadhi\Devkit\Console\Package\ResolvedPackage;
-use Uhifadhi\ModuleContracts\ModuleProviderInterface;
-use Uhifadhi\Seam\UhifadhiSeamBundle;
 
 /**
  * THE INSTALLED FLEET AS ONE REGISTER — every uhifadhi package with its version,
@@ -112,7 +112,7 @@ final class ModuleRegistry
     {
         $count = 0;
         foreach ($this->router->getRouteCollection() as $route) {
-            if ($slug === $route->getDefault(UhifadhiSeamBundle::MODULE_ROUTE_DEFAULT)) {
+            if ($slug === $route->getDefault(RegistryBundle::MODULE_ROUTE_DEFAULT)) {
                 ++$count;
             }
         }

@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Uhifadhi\Devkit\Console\Command;
 
+use Uhifadhi\Contracts\Devkit\CommandProviderInterface;
+use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
 use Uhifadhi\Devkit\Console\Package\PackageIntrospector;
 use Uhifadhi\Devkit\Console\Package\ResolvedPackage;
-use Uhifadhi\ModuleContracts\Devkit\CommandProviderInterface;
-use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
 
 /**
  * ASSEMBLES THE COMMAND LIST the console's Commands surface reads — the same

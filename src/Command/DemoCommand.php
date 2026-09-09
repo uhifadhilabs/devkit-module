@@ -18,9 +18,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
 use Uhifadhi\Devkit\Content\ContentOrderer;
 use Uhifadhi\Devkit\Content\ContentOrderingException;
-use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
 
 /**
  * `fixtures:demo` — seed every installed module's demo content, in dependency

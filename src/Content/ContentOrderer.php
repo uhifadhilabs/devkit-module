@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Uhifadhi\Devkit\Content;
 
-use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
+use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
 
 /**
  * Turns the collected {@see ContentProviderInterface} services into the order

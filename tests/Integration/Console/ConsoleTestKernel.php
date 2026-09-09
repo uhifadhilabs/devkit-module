@@ -22,12 +22,12 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Symfony\UX\Icons\UXIconsBundle;
 use Symfony\UX\StimulusBundle\StimulusBundle;
+use Uhifadhi\Bundle\RegistryBundle\RegistryBundle;
+use Uhifadhi\Bundle\ShellBundle\ShellBundle;
 use Uhifadhi\Devkit\Tests\Integration\Console\Fixtures\FixtureModuleProvider;
 use Uhifadhi\Devkit\Tests\Integration\Fixtures\RecordingCommandProvider;
 use Uhifadhi\Devkit\Tests\Integration\Fixtures\RecordingContentProvider;
 use Uhifadhi\Devkit\UhifadhiDevkitBundle;
-use Uhifadhi\Seam\UhifadhiSeamBundle;
-use Uhifadhi\Shell\UhifadhiShellBundle;
 
 /**
  * THE INSTALLATION THE DEV CONSOLE LIVES IN — the shell frame the console renders
@@ -52,7 +52,7 @@ final class ConsoleTestKernel extends Kernel
         yield new TwigBundle();
         yield new UXIconsBundle();
         yield new StimulusBundle();
-        yield new UhifadhiShellBundle();
+        yield new ShellBundle();
         yield new UhifadhiDevkitBundle();
     }
 
@@ -107,11 +107,11 @@ final class ConsoleTestKernel extends Kernel
         // installable one that declares a permission (per-area).
         $services->set('devkit.test.module.areas', FixtureModuleProvider::class)
             ->args(['areas', 'Areas', true, 0])
-            ->tag(UhifadhiSeamBundle::MODULE_TAG);
+            ->tag(RegistryBundle::MODULE_TAG);
 
         $services->set('devkit.test.module.patrol', FixtureModuleProvider::class)
             ->args(['patrol', 'Patrols', false, 2])
-            ->tag(UhifadhiSeamBundle::MODULE_TAG);
+            ->tag(RegistryBundle::MODULE_TAG);
     }
 
     protected function configureRoutes(RoutingConfigurator $routes): void

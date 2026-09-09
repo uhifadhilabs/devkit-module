@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Uhifadhi\Bundle\RegistryBundle\RegistryBundle;
 use Uhifadhi\Devkit\Console\Command\CommandInventory;
 use Uhifadhi\Devkit\Console\Controller\ConsoleController;
 use Uhifadhi\Devkit\Console\Doctor\Conformance;
@@ -21,7 +22,6 @@ use Uhifadhi\Devkit\Console\Package\ComposerPackageIntrospector;
 use Uhifadhi\Devkit\Console\Package\PackageIntrospector;
 use Uhifadhi\Devkit\Console\Wiring\SeamInspector;
 use Uhifadhi\Devkit\UhifadhiDevkitBundle;
-use Uhifadhi\Seam\UhifadhiSeamBundle;
 
 /*
  * THE DEV CONSOLE'S UI WIRING (slice 2).
@@ -58,7 +58,7 @@ return static function (ContainerConfigurator $container): void {
     // Modules surface — the installed fleet as one register.
     $services->set('devkit.console.module_registry', ModuleRegistry::class)
         ->args([
-            tagged_iterator(UhifadhiSeamBundle::MODULE_TAG),
+            tagged_iterator(RegistryBundle::MODULE_TAG),
             service('devkit.console.packages'),
             service('router'),
         ]);

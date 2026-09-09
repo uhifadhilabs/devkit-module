@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Uhifadhi\Devkit\Tests\Fixtures;
 
-use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
+use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
 
 /**
  * A content provider standing in for the inert ones real modules ship: it

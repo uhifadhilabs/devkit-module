@@ -28,7 +28,7 @@ use Uhifadhi\Devkit\Tests\Fixtures\FakeContentProvider;
 final class DemoCommandTest extends TestCase
 {
     /**
-     * @param iterable<\Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface> $providers
+     * @param iterable<\Uhifadhi\Contracts\Devkit\ContentProviderInterface> $providers
      */
     private function tester(iterable $providers): CommandTester
     {

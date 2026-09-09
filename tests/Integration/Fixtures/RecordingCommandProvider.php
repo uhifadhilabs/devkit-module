@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Uhifadhi\Devkit\Tests\Integration\Fixtures;
 
-use Uhifadhi\ModuleContracts\Devkit\CommandDescriptor;
-use Uhifadhi\ModuleContracts\Devkit\CommandProviderInterface;
+use Uhifadhi\Contracts\Devkit\CommandDescriptor;
+use Uhifadhi\Contracts\Devkit\CommandProviderInterface;
 
 /**
  * A container-managed command provider whose one descriptor records the tail it

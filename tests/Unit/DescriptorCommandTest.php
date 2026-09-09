@@ -15,8 +15,8 @@ namespace Uhifadhi\Devkit\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Uhifadhi\Contracts\Devkit\CommandDescriptor;
 use Uhifadhi\Devkit\Command\DescriptorCommand;
-use Uhifadhi\ModuleContracts\Devkit\CommandDescriptor;
 
 /**
  * A CommandDescriptor becomes a runnable console command: its name and help are

@@ -17,10 +17,10 @@ namespace Uhifadhi\Devkit\Console\Command;
  * The two things a module contributes to the assembled list, and the one
  * distinction the console draws between them.
  *
- * DEMO CONTENT is a {@see \Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface}
+ * DEMO CONTENT is a {@see \Uhifadhi\Contracts\Devkit\ContentProviderInterface}
  * — a slice of sample data seeded, in dependency order, by `fixtures:demo`. It is
  * not a standalone command; it is a step of the one command that stands a park
- * up. A COMMAND is a {@see \Uhifadhi\ModuleContracts\Devkit\CommandProviderInterface}
+ * up. A COMMAND is a {@see \Uhifadhi\Contracts\Devkit\CommandProviderInterface}
  * descriptor — a named dev/maintenance command devkit registers on its own.
  */
 enum CommandKind: string

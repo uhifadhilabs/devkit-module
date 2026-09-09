@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Uhifadhi\Devkit\Tests\Integration\Fixtures;
 
-use Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface;
+use Uhifadhi\Contracts\Devkit\ContentProviderInterface;
 
 /**
  * A container-managed content provider that records the order load() is called

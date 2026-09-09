@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Uhifadhi\Devkit\Tests\Integration\Console\Fixtures;
 
-use Uhifadhi\ModuleContracts\ModulePermission;
-use Uhifadhi\ModuleContracts\ModuleProviderInterface;
-use Uhifadhi\ModuleContracts\ModuleProviderTrait;
+use Uhifadhi\Contracts\ModulePermission;
+use Uhifadhi\Contracts\ModuleProviderInterface;
+use Uhifadhi\Contracts\ModuleProviderTrait;
 
 /**
  * A stand-in module provider — what an always-installed module tags with

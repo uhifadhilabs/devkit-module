@@ -17,7 +17,7 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
-use Uhifadhi\Seam\UhifadhiSeamBundle;
+use Uhifadhi\Bundle\RegistryBundle\RegistryBundle;
 
 /**
  * A router the registry unit tests fill with stamped routes — so "how many routes
@@ -40,7 +40,7 @@ final class FakeRouter implements RouterInterface
             for ($i = 0; $i < $count; ++$i) {
                 $this->routes->add(
                     \sprintf('%s_%d', $slug, $i),
-                    new Route('/'.$slug.'/'.$i, [UhifadhiSeamBundle::MODULE_ROUTE_DEFAULT => $slug]),
+                    new Route('/'.$slug.'/'.$i, [RegistryBundle::MODULE_ROUTE_DEFAULT => $slug]),
                 );
             }
         }

@@ -24,8 +24,8 @@ namespace Uhifadhi\Devkit\Console\Command;
  * key rather than inventing one.
  *
  * ON `deprecated`: it is always false in v1, and that is a FLAGGED GAP, not a
- * finding. Neither devkit contract — {@see \Uhifadhi\ModuleContracts\Devkit\CommandDescriptor}
- * nor {@see \Uhifadhi\ModuleContracts\Devkit\ContentProviderInterface} — carries
+ * finding. Neither devkit contract — {@see \Uhifadhi\Contracts\Devkit\CommandDescriptor}
+ * nor {@see \Uhifadhi\Contracts\Devkit\ContentProviderInterface} — carries
  * a deprecation signal, so devkit has nothing to read. Marking a dying command
  * needs a `deprecated` flag added to the descriptor contract (an owner decision),
  * and until then the console cannot mark one without guessing from its name.
