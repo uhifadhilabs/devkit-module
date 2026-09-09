@@ -9,6 +9,14 @@
          failOnWarning="true">
     <php>
         <env name="KERNEL_CLASS" value="Uhifadhi\Devkit\Tests\Integration\TestKernel"/>
+        <!--
+            Where the installation suite writes. Only the suite that boots the
+            whole core needs it: the collector's own kernels own no entities and
+            seed nothing of their own. Port 5434 is the local PostGIS cluster,
+            5432 in CI.
+        -->
+        <env name="UHIFADHI_TEST_DATABASE_URL"
+             value="postgresql://app:app@127.0.0.1:5434/uhifadhi_devkit_test?serverVersion=17&amp;charset=utf8"/>
     </php>
     <testsuites>
         <testsuite name="default">
