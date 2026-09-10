@@ -155,15 +155,35 @@ The commands the installed modules describe appear on the console at once,
 including the core's own:
 
 ```console
-bin/console team:user:create ada@example.test Ada Mwangi --tier=super-admin
+bin/console team:user:create
 bin/console fixtures:demo
 ```
 
 The first is how an installation gets its first administrator — the one account
 no screen can make, because every screen is behind the sign-in it does not yet
-have. Leave `--password=` off and the passphrase is read from standard input, so
-it need never reach a shell history:
+have. It asks for whatever it was not told, and the passphrase is never echoed:
+
+```console
+$ bin/console team:user:create
+Email address: ada@example.test
+First name: Ada
+Last name: Mwangi
+Tier — super-admin, admin, staff [super-admin]:
+Passphrase (not shown):
+Created Ada Mwangi <ada@example.test> as Super Admin.
+```
+
+The prompts and the passphrase both come through `Devkit\CommandIo`, wired here
+to the console's own input and error streams — `readSecret()` asks through
+Symfony's `QuestionHelper` with `Question::setHidden(true)`, so what is typed
+appears nowhere, and neither the question nor the answer touches standard
+output.
+
+A tail naming all three is asked nothing, which is what a provisioning script
+wants — and there `readSecret()` reads the piped line plainly, because a pipe
+has no echo to switch off:
 
 ```console
 printf '%s' "$PASSPHRASE" | bin/console team:user:create ada@example.test Ada Mwangi
+bin/console team:user:create ada@example.test Ada Mwangi --tier=staff --password="$PASSPHRASE"
 ```

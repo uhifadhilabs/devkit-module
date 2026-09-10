@@ -122,21 +122,73 @@ final class DescriptorCommandTest extends TestCase
     public function testTheHandlerReadsALineFromTheConsolesInput(): void
     {
         $read = null;
-        $command = new DescriptorCommand(new CommandDescriptor(
-            'demo:read',
-            'Reads one line of input.',
-            static function (array $arguments, CommandIo $io) use (&$read): int {
-                $read = $io->readLine();
-
-                return 0;
-            },
-        ));
-
-        $tester = new CommandTester($command);
+        $tester = new CommandTester(self::reading($read));
         $tester->setInputs(['a-piped-passphrase']);
         $tester->execute([]);
 
         self::assertSame('a-piped-passphrase', $read);
+    }
+
+    /**
+     * A SECRET COMES OFF THE SAME STREAM, which is what lets one verb serve
+     * both a passphrase typed at a prompt and one piped in: where there is no
+     * terminal there is no echo to switch off, and the line is simply read.
+     */
+    public function testTheHandlerReadsASecretFromTheConsolesInput(): void
+    {
+        $read = null;
+        $tester = new CommandTester(self::reading($read, secret: true));
+        $tester->setInputs(['a-typed-passphrase']);
+        $tester->execute([]);
+
+        self::assertSame('a-typed-passphrase', $read);
+    }
+
+    /**
+     * AND IT DOES NOT COME BACK OUT. The whole of readSecret() is that what was
+     * typed is not shown — so neither the answer nor the question it was given
+     * in reply to may land on standard output, where a caller piping this
+     * command's result would collect the passphrase along with it.
+     */
+    public function testASecretReachesNeitherOutputStream(): void
+    {
+        $read = null;
+        $tester = new CommandTester(self::reading($read, secret: true));
+        $tester->setInputs(['a-typed-passphrase']);
+        $tester->execute([], ['capture_stderr_separately' => true]);
+
+        self::assertSame('a-typed-passphrase', $read);
+        self::assertStringNotContainsString('a-typed-passphrase', $tester->getDisplay());
+        self::assertStringNotContainsString('a-typed-passphrase', $tester->getErrorOutput());
+        self::assertSame('', $tester->getDisplay(), 'Asking for a secret is not the command\'s result, so none of it is on standard output.');
+    }
+
+    /**
+     * NOTHING TYPED IS NULL, and with the echo off that is all null can mean: a
+     * prompt answered with a return and a stream that closed under it arrive
+     * identically, and a handler that requires a secret refuses either.
+     */
+    public function testAnInputThatOffersNothingHasNoSecretToGive(): void
+    {
+        $read = 'never read';
+        $tester = new CommandTester(self::reading($read, secret: true));
+        $tester->execute([]);
+
+        self::assertNull($read);
+    }
+
+    /** A command whose handler records the one line, or the one secret, it was given. */
+    private static function reading(mixed &$read, bool $secret = false): DescriptorCommand
+    {
+        return new DescriptorCommand(new CommandDescriptor(
+            'demo:read',
+            'Reads one line of input.',
+            static function (array $arguments, CommandIo $io) use (&$read, $secret): int {
+                $read = $secret ? $io->readSecret() : $io->readLine();
+
+                return 0;
+            },
+        ));
     }
 
     /**
