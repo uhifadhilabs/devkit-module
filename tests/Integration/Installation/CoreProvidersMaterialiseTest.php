@@ -29,13 +29,14 @@ use Uhifadhi\Bundle\TeamBundle\Enum\TeamRoleEnum;
 /**
  * THE POINT OF THE WHOLE ARRANGEMENT, asked of a real installation.
  *
- * The core ships two inert services and no console command. devkit installs
- * through require-dev and ships no provider. Separately each is a half that does
- * nothing: a provider nothing collects, and a collector with nothing to collect.
- * This suite installs both and asks whether the halves meet — whether somebody
- * who has just run `composer require --dev uhifadhi/devkit-module` gets, on the
- * console, the one account an installation cannot make through a screen, and a
- * populated first screen to look at.
+ * The core ships an inert content provider and one console command, the
+ * documented exception a production installation is bootstrapped through.
+ * devkit installs via require-dev and ships no provider of its own. Separately
+ * each is a half that does nothing: a provider nothing collects, and a
+ * collector with nothing to collect. This suite installs both and asks whether
+ * somebody who has just run `composer require --dev uhifadhi/devkit-module`
+ * gets, on the console, the one account an installation cannot make through a
+ * screen, and a populated first screen to look at.
  *
  * IT ASKS THE CONSOLE APPLICATION, not devkit's loader. The loader is unit-tested
  * for what it builds; what is in question here is whether `bin/console` — the
@@ -71,8 +72,9 @@ final class CoreProvidersMaterialiseTest extends TestCase
     }
 
     /**
-     * The core describes a command; the console lists it. Everything devkit does
-     * is in between.
+     * The command survives devkit's decoration of the command loader: a
+     * collector that swallowed the commands already there would break the one
+     * account an installation cannot do without.
      */
     public function testTheFirstAdministratorCommandIsListedByTheConsole(): void
     {
@@ -86,7 +88,7 @@ final class CoreProvidersMaterialiseTest extends TestCase
     }
 
     /**
-     * Its help is the descriptor's own line, so somebody reading the listing is
+     * Its help is the core's own line, so somebody reading the listing is
      * reading what the core wrote rather than something devkit invented.
      */
     public function testTheCommandCarriesTheDescriptionTheCoreGaveIt(): void
@@ -105,7 +107,10 @@ final class CoreProvidersMaterialiseTest extends TestCase
         $exitCode = $this->console->run(
             new ArrayInput([
                 'command' => 'team:user:create',
-                'arguments' => ['ada@example.test', 'Ada', 'Mwangi', '--password=a-long-enough-passphrase'],
+                'email' => 'ada@example.test',
+                'first-name' => 'Ada',
+                'last-name' => 'Mwangi',
+                '--password' => 'a-long-enough-passphrase',
             ]),
             $output,
         );
@@ -133,7 +138,11 @@ final class CoreProvidersMaterialiseTest extends TestCase
         $this->console->run(
             new ArrayInput([
                 'command' => 'team:user:create',
-                'arguments' => ['kofi@example.test', 'Kofi', 'Mensah', '--tier=staff', '--password=a-long-enough-passphrase'],
+                'email' => 'kofi@example.test',
+                'first-name' => 'Kofi',
+                'last-name' => 'Mensah',
+                '--tier' => 'staff',
+                '--password' => 'a-long-enough-passphrase',
             ]),
             new BufferedOutput(),
         );

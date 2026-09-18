@@ -44,15 +44,15 @@ use Uhifadhi\Devkit\UhifadhiDevkitBundle;
  * collector on FrameworkBundle alone with hand-tagged fixture providers, the
  * other boots the dev console's frame without a database. Both prove devkit
  * collects whatever is tagged. Neither proves the thing devkit exists for —
- * that the providers the core actually ships turn into a command somebody can
- * run and content somebody can look at — because in both, the providers are
+ * that what the core actually ships turns into content somebody can look at
+ * and a console a developer can work through — because in both, the providers are
  * this suite's own and the assertions can only be about themselves.
  *
  * So this one installs the core: the registry, the shell, the roster, areas and
  * the atlas, plus the security file an installation gets from the skeleton,
  * because the roster's provider entity is a security provider and TeamBundle
- * does not boot without one. What is asserted through it is the core's own two
- * providers, materialised.
+ * does not boot without one. What is asserted through it is the core's own
+ * content, materialised, and its commands reachable.
  *
  * It has no route of its own. Nothing here renders a page; the console
  * application is the surface under test.

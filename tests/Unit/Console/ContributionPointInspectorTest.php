@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Uhifadhi\Devkit\Tests\Unit\Console;
 
 use PHPUnit\Framework\TestCase;
-use Uhifadhi\Bundle\AreaBundle\Kpi\DepartmentKpiProviderInterface;
 use Uhifadhi\Bundle\AreaBundle\Overview\AttentionProviderInterface;
 use Uhifadhi\Bundle\AreaBundle\Overview\MapLayerProviderInterface;
 use Uhifadhi\Bundle\AreaBundle\Overview\NowTileProviderInterface;
@@ -23,6 +22,7 @@ use Uhifadhi\Bundle\AreaBundle\Overview\OverviewCopyProviderInterface;
 use Uhifadhi\Bundle\AreaBundle\Overview\PulseProviderInterface;
 use Uhifadhi\Bundle\RegistryBundle\RegistryBundle;
 use Uhifadhi\Bundle\ShellBundle\Widget\Registry\WidgetSurfaceInterface;
+use Uhifadhi\Contracts\Kpi\DepartmentKpiProviderInterface;
 use Uhifadhi\Devkit\Console\Package\ResolvedPackage;
 use Uhifadhi\Devkit\Console\Wiring\ContributionPoint;
 use Uhifadhi\Devkit\Console\Wiring\ContributionPointInspector;
