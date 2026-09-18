@@ -73,21 +73,27 @@ bin/console area:zones:import <area-uuid> <file.geojson>
 
 One GeoJSON FeatureCollection, one feature per zone, into an area that already
 exists. The core carries the import — the name property, the dropped altitudes,
-WGS84, the zone invariant, all-or-nothing — and ships no command for it, because
-an installation's console holds one command and the screen that will offer this
-is waiting on its design. Devkit is where the path belongs in the meantime, and
-it is absent from a production build.
+WGS84, the zone invariant, what may be added to a set that already has zones in
+it — and ships no command for it, because an installation's console holds one
+command and the screen that will offer this is waiting on its design. Devkit is
+where the path belongs in the meantime, and it is absent from a production build.
 
-The summary names the zones created, the property their names came out of, and
-every property the file carried that the import read past — so a `description` or
-a merge field nobody stored is stated rather than silently lost. A refusal prints
-the import's own sentence, which names the offending feature, and exits non-zero;
-the area keeps exactly the zones it had.
+An import adds and never overwrites. Every feature that fits arrives, and the
+ones that do not are tabled with their reason — a name the area already carries,
+a ring over a zone that is already there, ground outside the boundary — under a
+`N added · M skipped` summary and a zero exit, because nothing was destroyed to
+make room for what did arrive.
 
-There is no `--dry-run`. The import validates as it writes — each feature is
-checked against the ones written before it, inside the import's own transaction —
-so the only honest dry run is one the core's service offers itself. Until it
-does, import into a throwaway area.
+The summary also names the property the zone names came out of and every property
+the file carried that the import read past, so a `description` or a merge field
+nobody stored is stated rather than silently lost.
+
+A non-zero exit is reserved for the file the import refused whole — unreadable,
+no property naming every feature, coordinates that are not degrees — and it
+prints the import's own sentence. There is no `--dry-run`: the core's service
+previews a file through its own plan, which is what the zones screen confirms
+against, and a second shape of that from the console would be a second answer to
+one question.
 
 ## How a module contributes
 

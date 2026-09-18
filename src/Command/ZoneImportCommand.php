@@ -37,27 +37,29 @@ use Uhifadhi\Bundle\AreaBundle\Service\ZoneImportService;
  * path is absent from a production build, because require-dev is the firewall.
  *
  * IT DECIDES NOTHING. Every rule about what a zoning scheme may be — the name
- * property, the altitudes dropped, WGS84, the zone invariant, all-or-nothing —
- * belongs to {@see ZoneImportService}, and every refusal printed here is that
- * service's own sentence. What this command adds is the two things a console run
- * needs that a service call does not: an area named by uuid rather than handed
- * over as an object, and a readable summary of what the import did with the file.
+ * property, the altitudes dropped, WGS84, the zone invariant, what may be added
+ * to a set that already has zones in it — belongs to {@see ZoneImportService},
+ * and every word printed here is that service's own.
+ *
+ * AN IMPORT ADDS AND NEVER OVERWRITES, so this run has two ordinary endings.
+ * The features that fit arrive; the ones that do not are printed with the
+ * reason beside them, and the run still succeeds — a scheme that grew by nine
+ * of eleven is what was asked for, and nothing was destroyed to make room for
+ * it. A non-zero exit is reserved for the file the import refused whole, the
+ * one nobody can act on feature by feature.
  *
  * THE SUMMARY HAS BOTH HALVES, because {@see \Uhifadhi\Bundle\AreaBundle\Model\ZoneImportResult}
- * has both: the zones that were made and the property their names came out of,
- * then every property the file carried that the import read past. A file exported
- * from a desktop GIS is full of description, altitudeMode and merge fields, and
- * somebody who is not told they were ignored will go looking for them.
+ * has both: the zones that were made, the ones that were left out and why, the
+ * property the names came out of, and every property the file carried that the
+ * import read past. A file exported from a desktop GIS is full of description,
+ * altitudeMode and merge fields, and somebody who is not told they were ignored
+ * will go looking for them.
  *
- * THERE IS NO `--dry-run`, and adding one is not this command's call. The import
- * validates as it writes — the zone invariant is measured against what is already
- * stored, so a feature is checked against the features written before it inside
- * the import's own transaction — and the only honest dry run is one the service
- * offers itself. Asking for one from out here would mean either a second code
- * path through the core or a transaction rolled back behind the service's back,
- * and a scheme that reported clean through one path and refused through the other
- * would be worse than no dry run at all. Until the service offers it, a developer
- * imports into a throwaway area.
+ * THERE IS NO `--dry-run`, and adding one is not this command's call. The
+ * service previews a file through {@see ZoneImportService::plan()}, which is
+ * what the screen confirms against; offering a second shape of that from out
+ * here would be a second answer to one question. A developer who wants the
+ * preview calls the service.
  *
  * Nobody is recorded as the importer: provenance names a person where one is
  * known, and a console run is a machine with a file path.
@@ -110,8 +112,8 @@ final class ZoneImportCommand extends Command
             // upload path would be provenance of nothing.
             $result = $this->import->importInto($area, new File($path), basename($path));
         } catch (ZoneImportException $e) {
-            // The import's own sentence, which names the offending feature. A
-            // refused scheme leaves the area with exactly the zones it had.
+            // A whole-file refusal: nothing was read, so the area has exactly
+            // the zones it had, and the sentence is the import's own.
             $io->error($e->getMessage());
 
             return Command::FAILURE;
@@ -120,14 +122,32 @@ final class ZoneImportCommand extends Command
         $io->title(\sprintf('Zones imported into %s', $area->getName() ?? 'the area'));
 
         $io->text(\sprintf('Read from <info>%s</info>.', $result->fileName));
-        $io->listing($result->zoneNames);
+
+        if ([] !== $result->added) {
+            $io->listing($result->added);
+        }
+
         $io->text(\sprintf('Names came from the <info>%s</info> property.', $result->nameProperty));
 
         $io->text([] === $result->ignoredProperties
             ? 'The file carried no other properties.'
             : \sprintf('Properties read past and not stored: %s.', implode(', ', $result->ignoredProperties)));
 
-        $io->success(\sprintf('%d zone(s) created in %s.', $result->count(), $area->getName() ?? 'the area'));
+        if ([] !== $result->skipped) {
+            $rows = [];
+            foreach ($result->skipped as $name => $why) {
+                $rows[] = [$name, $why];
+            }
+
+            $io->table(['Left out', 'Why'], $rows);
+        }
+
+        $io->success(\sprintf(
+            '%d added · %d skipped, in %s.',
+            $result->count(),
+            $result->skippedCount(),
+            $area->getName() ?? 'the area',
+        ));
 
         return Command::SUCCESS;
     }

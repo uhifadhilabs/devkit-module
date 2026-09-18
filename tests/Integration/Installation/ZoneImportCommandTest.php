@@ -44,6 +44,12 @@ use Uhifadhi\Bundle\AreaBundle\Service\AreaCreator;
  * carrying the residue a real export carries — a capitalised name column, KML
  * leftovers, a merge field and an altitude on every vertex — because those are
  * the things the summary has to account for.
+ *
+ * AN IMPORT ADDS AND NEVER OVERWRITES, so the console run under test has two
+ * ordinary endings and one refusal. Every feature that fits arrives; the ones
+ * that do not are tabled with their reason and the run succeeds, because a
+ * subdivision that grew by nine of eleven is the thing that was asked for. Only
+ * a file nobody can act on feature by feature ends in a non-zero exit.
  */
 final class ZoneImportCommandTest extends TestCase
 {
@@ -118,6 +124,7 @@ final class ZoneImportCommandTest extends TestCase
         self::assertStringContainsString('description', $printed, 'What was read past has to be said, or somebody is left wondering where it went.');
         self::assertStringContainsString('layer', $printed);
         self::assertStringContainsString('altitudeMode', $printed);
+        $this->assertSaid('2 added · 0 skipped', $printed, 'The summary counts both halves, or a partial run reads as a whole one.');
 
         $import = $this->entityManager()->getRepository(ZoneImport::class)->findAll();
         self::assertCount(1, $import, 'One file read is one row of provenance beside the geometry.');
@@ -125,10 +132,11 @@ final class ZoneImportCommandTest extends TestCase
     }
 
     /**
-     * A refused scheme leaves the area exactly as it was, and the person reading
-     * the console gets the import's own sentence rather than a stack trace.
+     * A feature the area cannot take is a line in a table, not the end of the
+     * run: the rest of the file still arrives, and the person is told which one
+     * was left behind and why.
      */
-    public function testItRefusesOverlappingZonesWithTheImportsOwnSentence(): void
+    public function testItAddsWhatFitsAndTablesWhatItLeftOut(): void
     {
         $area = $this->area();
         $file = $this->geoJson([
@@ -143,14 +151,51 @@ final class ZoneImportCommandTest extends TestCase
         );
         $printed = $output->fetch();
 
-        self::assertNotSame(0, $exitCode, 'A refused import that exits 0 tells a script the subdivision is in.');
+        self::assertSame(0, $exitCode, $printed);
+
+        $zones = $this->entityManager()->getRepository(Zone::class)->findAll();
+        self::assertCount(1, $zones, 'What fits arrives; nothing was overwritten to make room for what did not.');
+        self::assertSame('Northern block', $zones[0]->getName());
+
+        self::assertStringContainsString('Overlapping block', $printed);
         $this->assertSaid(
-            'Zone "Overlapping block" overlaps zone "Northern block" — zones of one area may touch along an edge or leave gaps, but never share interior.',
+            'overlaps Northern block in this same file',
+            $printed,
+            'The reason is the import\'s own, beside the name it belongs to.',
+        );
+        $this->assertSaid('1 added · 1 skipped', $printed, 'Both halves are counted.');
+
+        $import = $this->entityManager()->getRepository(ZoneImport::class)->findAll();
+        self::assertCount(1, $import, 'A partial import is an import, and it leaves its line of provenance.');
+    }
+
+    /**
+     * A file nobody can act on feature by feature is the one thing still
+     * refused whole, and it ends the run non-zero so a script knows.
+     */
+    public function testItRefusesAWholeFileWithTheImportsOwnSentence(): void
+    {
+        $area = $this->area();
+        $file = $this->geoJson(
+            [$this->feature('Northern block', 0, 0)],
+            ['crs' => ['type' => 'name', 'properties' => ['name' => 'urn:ogc:def:crs:EPSG::32736']]],
+        );
+
+        $output = new BufferedOutput();
+        $exitCode = $this->console->run(
+            new ArrayInput(['command' => 'area:zones:import', 'area' => $area, 'file' => $file]),
+            $output,
+        );
+        $printed = $output->fetch();
+
+        self::assertNotSame(0, $exitCode, 'A file that was not read at all cannot exit as though it had been.');
+        $this->assertSaid(
+            'coordinates are projected (urn:ogc:def:crs:EPSG::32736), not degrees',
             $printed,
             'The words are the import\'s, not the command\'s.',
         );
 
-        self::assertSame([], $this->entityManager()->getRepository(Zone::class)->findAll(), 'All or nothing: half a subdivision is a wrong one.');
+        self::assertSame([], $this->entityManager()->getRepository(Zone::class)->findAll());
         self::assertSame([], $this->entityManager()->getRepository(ZoneImport::class)->findAll());
     }
 
@@ -246,15 +291,16 @@ final class ZoneImportCommandTest extends TestCase
 
     /**
      * @param list<array<string, mixed>> $features
+     * @param array<string, mixed>       $members  anything else the document carries, such as a declared crs
      *
      * @return string the path of a file this test will delete again
      */
-    private function geoJson(array $features): string
+    private function geoJson(array $features, array $members = []): string
     {
         $path = sys_get_temp_dir().'/devkit-module-tests/'.uniqid('scheme-', true).'.geojson';
         @mkdir(\dirname($path), 0o777, true);
         file_put_contents($path, (string) json_encode(
-            ['type' => 'FeatureCollection', 'features' => $features],
+            ['type' => 'FeatureCollection', ...$members, 'features' => $features],
             \JSON_THROW_ON_ERROR,
         ));
 
