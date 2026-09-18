@@ -86,6 +86,13 @@ final class UhifadhiDevkitBundle extends AbstractBundle
         if (isset($bundles['TwigBundle'])) {
             $container->import('../config/console.php');
         }
+
+        // The zone import — ONLY where the core's areas are installed, gated the
+        // same way and for the same reason: it names an area repository and the
+        // core's import service, neither of which a framework-only kernel has.
+        if (isset($bundles['AreaBundle'])) {
+            $container->import('../config/zones.php');
+        }
     }
 
     public function build(ContainerBuilder $container): void

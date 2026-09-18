@@ -14,6 +14,7 @@ is the only place devkit exists.
 - [What it collects](#what-it-collects)
 - [`fixtures:demo` — demo content in dependency order](#fixturesdemo--demo-content-in-dependency-order)
 - [Descriptor commands](#descriptor-commands)
+- [`area:zones:import` — a zoning scheme from a file](#areazonesimport--a-zoning-scheme-from-a-file)
 - [How a module contributes](#how-a-module-contributes)
 - [The dev console](#the-dev-console)
 - [Why the contracts live in the core, not here](#why-the-contracts-live-in-the-core-not-here)
@@ -63,6 +64,30 @@ A module's handler therefore never touches `\STDOUT` or `\STDIN` itself. It has
 no console to write to and reaching for the file descriptor would escape the one
 it was given — output that ignores `--quiet`, that a caller capturing the
 command cannot see, and that appears uninvited in a test run.
+
+## `area:zones:import` — a zoning scheme from a file
+
+```console
+bin/console area:zones:import <area-uuid> <file.geojson>
+```
+
+One GeoJSON FeatureCollection, one feature per zone, into an area that already
+exists. The core carries the import — the name property, the dropped altitudes,
+WGS84, the zone invariant, all-or-nothing — and ships no command for it, because
+an installation's console holds one command and the screen that will offer this
+is waiting on its design. Devkit is where the path belongs in the meantime, and
+it is absent from a production build.
+
+The summary names the zones created, the property their names came out of, and
+every property the file carried that the import read past — so a `description` or
+a merge field nobody stored is stated rather than silently lost. A refusal prints
+the import's own sentence, which names the offending feature, and exits non-zero;
+the area keeps exactly the zones it had.
+
+There is no `--dry-run`. The import validates as it writes — each feature is
+checked against the ones written before it, inside the import's own transaction —
+so the only honest dry run is one the core's service offers itself. Until it
+does, import into a throwaway area.
 
 ## How a module contributes
 
