@@ -159,7 +159,7 @@ final class ZoneImportCommandTest extends TestCase
 
         self::assertStringContainsString('Overlapping block', $printed);
         $this->assertSaid(
-            'overlaps Northern block in this same file',
+            'overlaps Northern block in this file',
             $printed,
             'The reason is the import\'s own, beside the name it belongs to.',
         );
