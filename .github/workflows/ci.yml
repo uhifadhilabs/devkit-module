@@ -25,7 +25,7 @@ jobs:
     # claims about rows. The collector's own suites need none of it.
     services:
       postgres:
-        image: ghcr.io/fundistadi/postgis:17
+        image: ghcr.io/utafitilabs/postgis:17
         env:
           POSTGRES_USER: app
           POSTGRES_PASSWORD: app

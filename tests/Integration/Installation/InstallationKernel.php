@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Uhifadhi\Devkit\Tests\Integration\Installation;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use FundiStadi\PostGISBundle\FundiStadiPostGISBundle;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -34,6 +33,7 @@ use Uhifadhi\Bundle\TeamBundle\Entity\User;
 use Uhifadhi\Bundle\TeamBundle\Security\ApiTokenAuthenticator;
 use Uhifadhi\Bundle\TeamBundle\TeamBundle;
 use Uhifadhi\Devkit\UhifadhiDevkitBundle;
+use UtafitiLabs\PostGISBundle\UtafitiLabsPostGISBundle;
 
 /**
  * A REAL INSTALLATION WITH DEVKIT IN IT — the whole core, a real database, and
@@ -65,7 +65,7 @@ final class InstallationKernel extends Kernel
     {
         yield new FrameworkBundle();
         yield new DoctrineBundle();
-        yield new FundiStadiPostGISBundle();
+        yield new UtafitiLabsPostGISBundle();
         yield new TwigBundle();
         yield new UXIconsBundle();
         yield new StimulusBundle();
