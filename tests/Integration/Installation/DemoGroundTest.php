@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Uhifadhi\Bundle\AreaBundle\Devkit\DemoArea;
 use Uhifadhi\Bundle\AreaBundle\Entity\AreaOfInterest;
 use Uhifadhi\Bundle\AreaBundle\Entity\Posting;
 use Uhifadhi\Bundle\AreaBundle\Entity\Station;
@@ -79,7 +80,7 @@ final class DemoGroundTest extends TestCase
 
         foreach ($areas as $area) {
             self::assertCount(
-                6,
+                self::zonesInTheScheme(),
                 $this->zonesOf($area),
                 \sprintf('%s is seeded with a whole zoning scheme, imported as one FeatureCollection.', (string) $area->getName()),
             );
@@ -91,7 +92,11 @@ final class DemoGroundTest extends TestCase
         foreach ($this->areas() as $area) {
             $stations = $this->stationsOf($area);
 
-            self::assertCount(8, $stations, 'Eight posts to look at on the area\'s own map.');
+            self::assertCount(
+                \count(self::theGround()->stations()),
+                $stations,
+                'Every post the ground describes is on the area\'s own map.',
+            );
 
             $unzoned = array_filter($stations, static fn (Station $station): bool => null === $station->getZone());
 
@@ -114,7 +119,7 @@ final class DemoGroundTest extends TestCase
         }
     }
 
-    public function testEveryStaffedStationHasExactlyOneLeaderAndOneStationHasNobody(): void
+    public function testEveryStaffedStationHasExactlyOneLeaderAndThePostsMeantToBeEmptyAre(): void
     {
         foreach ($this->areas() as $area) {
             $unstaffed = 0;
@@ -138,7 +143,7 @@ final class DemoGroundTest extends TestCase
             }
 
             self::assertSame(
-                1,
+                self::postsLeftEmpty(),
                 $unstaffed,
                 \sprintf('A post nobody works out of is a state %s has to draw too.', (string) $area->getName()),
             );
@@ -221,5 +226,54 @@ final class DemoGroundTest extends TestCase
         self::assertInstanceOf(EntityManagerInterface::class, $manager);
 
         return $manager;
+    }
+
+    /**
+     * THE GROUND'S OWN STATEMENT OF ITSELF, and the reason nothing above
+     * counts anything by hand.
+     *
+     * A TEST THAT RETYPES A NUMBER THE CODE ALSO STATES has to be edited
+     * every time the code is right. These assertions said eight posts and
+     * one empty one; the ground grew to twelve with two empty, the demo
+     * was correct, and this suite went red in another repository to say
+     * so. What each of them is actually about — every post described is
+     * on the map, every staffed post has exactly one leader, the posts
+     * meant to be empty are the ones that are — is unchanged by a resize,
+     * so none of them should notice one.
+     *
+     * THE TABLE IS THE SAME FOR EVERY DEMO AREA, which is why the first
+     * one answers for all of them.
+     */
+    private static function theGround(): DemoArea
+    {
+        return DemoArea::all()[0];
+    }
+
+    /**
+     * HOW MANY ZONES THE SCHEME CARRIES, counted from the FeatureCollection
+     * the demo actually imports — the same document the installation reads,
+     * so this cannot disagree with what was seeded.
+     */
+    private static function zonesInTheScheme(): int
+    {
+        $scheme = json_decode(self::theGround()->zoneScheme(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertIsArray($scheme);
+        self::assertArrayHasKey('features', $scheme);
+        self::assertIsArray($scheme['features']);
+
+        return \count($scheme['features']);
+    }
+
+    /** How many posts the ground deliberately leaves nobody at. */
+    private static function postsLeftEmpty(): int
+    {
+        $empty = 0;
+        foreach (self::theGround()->stations() as $post) {
+            if (0 === $post->posted) {
+                ++$empty;
+            }
+        }
+
+        return $empty;
     }
 }
